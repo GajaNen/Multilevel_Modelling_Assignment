@@ -1,0 +1,9 @@
+---
+title: Assignment 2
+author: Clara Baudry, Gaja Nenadović, Hsuan Lee
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+geometry: margin=0.7in
+---
+  
+# 1.
