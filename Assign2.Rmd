@@ -1,9 +1,226 @@
 ---
 title: Assignment 2
-author: Clara Baudry, Gaja Nenadović, Hsuan Lee
+author: Clara Baudry & Gaja Nenadović & Hsuan Lee
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: pdf_document
 geometry: margin=0.7in
 ---
-  
-# 1.
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(knitr)
+library(tidyverse)
+library(ggplot2)
+library(lme4)
+library(lmerTest)
+```
+
+# 1. Convert the wide data file into a long format. Check the data and recode if necessary.
+
+```{r}
+dat <- read.csv("curran_wide.csv")
+
+# transform to long format, excluding sex and homeemo variables, and change time to int
+dat_long <- pivot_longer(data=dat[,-c(10, 13)],
+                         cols=c(2:9),
+                         names_to = c(".value", "time"),
+                         names_pattern = "(anti|read)(.)") %>% mutate_at(vars(time), as.integer)
+
+# summary statistics
+kable(summary(dat_long[,-1]))
+```
+We see that the *time* variable ranges from 1 to 4, which means that the first occasion is coded as 1. This means that the intercept cannot be interpreted meaningfully (the time variable will never be equal to 0). Therefore, we will recode the time variable and set its range from 0 to 3, so that the intercept is the predicted outcome for the first occasion when all other predictors are equal to 0. Looking at the ranges of the other predictors, we see that 0 is not a plausible value for any of them. This again means that the intercept will not be meaningful and we will have to extrapolate to interpret it. We will center the three predictors (*momage*, *read*, *homecog*), so that the intercept can be interpreted as the predicted outcome at the first occasion for a person with average values on all the other predictors.
+
+```{r}
+dat_long$time <- dat_long$time - 1
+dat_long[,-c(1, 4)] <- scale(dat_long[,-c(1, 4)], scale=F)
+kable(summary(dat_long[,-1]))
+```
+
+As we see from the table, 0 is now a plausible (and meaningful) value for every predictor.
+
+## Check the linearity assumption, report and include plots.
+
+```{r}
+# a scatterplot with a linear and quadratic trend for each of the time-varying predictors and the outcome
+
+ggplot(dat_long,
+       aes(x = time, y = anti)) +
+       geom_point() +
+       geom_smooth(method = "lm",
+                   aes(color = "linear"),
+                   se = FALSE) +
+       geom_smooth(method = "lm",
+                   formula = y ~ x + I(x**2),
+                   aes(color = "quadratic"),
+                   se = FALSE) +
+       theme_minimal() +
+       xlab("Time point") +
+       ylab("Behaviour Problems Index")
+
+ggplot(dat_long,
+       aes(x = read, y = anti)) +
+       geom_point() +
+       geom_smooth(method = "lm",
+                   aes(color = "linear"),
+                   se = FALSE) +
+       geom_smooth(method = "lm",
+                   formula = y ~ x + I(xˆ2),
+                   aes(color = "quadratic"),
+                   se = FALSE) +
+       theme_minimal() +
+       xlab("Reading recognition score") +
+       ylab("Behaviour Problems Index")
+```
+
+
+## Check for outliers, report.
+
+
+
+# 2. Answer the question: should you perform a multilevel analysis?
+
+## What is the mixed model equation?
+
+## Provide and interpret the relevant results.
+
+```{r}
+# intercept-only model
+m0 <- lm(anti ~ 1, data=dat_long)
+summary(m0)
+
+
+# intercept-only model with the random intercept term
+m1 <- lmer(anti ~ 1 + (1|id), REML=F, data=dat_long)
+summary(m1)
+
+
+# comparison of m0 and m1
+anova(m1, m0)
+
+# yes, we should use a multilevel model
+```
+
+## What is the intraclass correlation?
+
+```{r}
+ICC <- 1.579/(1.579+1.741)
+ICC
+```
+
+## What is your conclusion regarding the overall question regarding the necessity of performing a multilevel analysis?
+
+
+
+# 3. Add the time-varying predictor(s).
+
+```{r}
+# add time
+m2 <- lmer(anti ~ 1 + time + (1|id), REML=F, data=dat_long)
+summary(m2)
+
+anova(m2, m1)
+
+# add read
+m3 <- lmer(anti ~ 1 + time + read + (1|id), REML=F, data=dat_long)
+summary(m3)
+
+anova(m3, m2)
+
+# not significant - read should be removed
+```
+
+## Provide and interpret the relevant results and provide your overall conclusion.
+
+
+
+# 4. On which level or levels can you expect explained variance?
+
+## Calculate and interpret the explained variances.
+
+
+
+# 5. Add the time invariant predictor(s) to the model.
+
+```{r}
+m4a <- lmer(anti ~ 1 + time + momage + homecog + (1|id), REML=F, data=dat_long)
+summary(m4a)
+
+anova(m4a, m2)
+
+# momage not significant - should be removed
+
+m4b <- lmer(anti ~ 1 + time + homecog + (1|id), REML=F, data=dat_long)
+summary(m4b)
+
+anova(m4b, m2)
+```
+
+## Provide and interpret the relevant results and provide your overall conclusion
+
+
+
+# 6. On which level or levels can you expect explained variance?
+
+## Calculate and interpret the explained variances.
+
+
+
+# 7. For the time-varying predictor(s), check if the slope is fixed or random.
+
+## What are the null- and alternative hypotheses?
+
+- $H_{0}: \sigma_{u1} = 0$.
+- $H_{1}: \sigma_{u1} > 0$.
+
+## Provide and interpret the relevant results.
+
+```{r}
+m5 <- lmer(anti ~ 1 + time + homecog + (1 + time|id), REML=F, data=dat_long)
+summary(m5)
+
+anova(m5, m4b)
+
+# variance of u_{time} is significantly different from 0
+# should keep the random slope term
+```
+
+## Provide an overall conclusion.
+
+
+# 8. If there is a random slope, set up a model that predicts the slope variation.
+
+```{r}
+m6 <- lmer(anti ~ 1 + time + homecog + time*homecog + (1 + time|id), REML=F, data=dat_long)
+
+summary(m6) # homecog is not significant anymore, but the interaction is
+
+anova(m6, m5)
+```
+
+## Provide and interpret the relevant results and provide your overall conclusion.
+
+
+# 9. Decide on a final model.
+
+## provide the separate level 1 and 2 model equations, as well as the mixed model equation.
+
+## Check the normality assumption for both the level-1 and level-2 errors, report.
+
+```{r}
+# level 1:
+qqnorm(residuals(m6), main = "Q-Q plot for the first level residuals")
+#qqline(residuals(m6))
+
+
+# level 2:
+
+# intercept
+qqnorm(ranef(m6)$id[,1], main = "Q-Q plot for the intercept")
+#qqline(ranef(m6)$id[,1])
+
+# slope
+qqnorm(ranef(m6)$id[,2], main = "Q-Q plot for the slope of time variable")
+#qqline(ranef(m6)$id[,2])
+```
