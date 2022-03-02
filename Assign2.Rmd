@@ -155,7 +155,7 @@ anova(m3, m2)
 m4a <- lmer(anti ~ 1 + time + momage + homecog + (1|id), REML=F, data=dat_long)
 summary(m4a)
 
-# compare the model with both level 2 predictors with the model without them
+# compare the model with both level 2 predictors with the best model without them
 anova(m4a, m2)
 
 # momage not significant - should be removed
@@ -164,7 +164,7 @@ anova(m4a, m2)
 m4b <- lmer(anti ~ 1 + time + homecog + (1|id), REML=F, data=dat_long)
 summary(m4b)
 
-# compare the model with homecog with the model with only level 1 predictors
+# compare the model with homecog with the best model with only level 1 predictors
 anova(m4b, m2)
 ```
 
