@@ -37,7 +37,7 @@ We see that the *time* variable ranges from 1 to 4, which means that the first o
 dat_long$time <- dat_long$time - 1
 
 # center the three continous predictors
-dat_long[,-c(1, 4)] <- scale(dat_long[,-c(1, 4)], scale=F)
+dat_long[,-c(1, 4, 5)] <- scale(dat_long[,-c(1, 4, 5)], scale=F)
 
 # check summary statistics again
 kable(summary(dat_long[,-1]))
@@ -123,14 +123,14 @@ ICC
 # 3. Add the time-varying predictor(s).
 
 ```{r}
-# add time as a level 1 predictor
+# add time as a fixed level 1 predictor
 m2 <- lmer(anti ~ 1 + time + (1|id), REML=F, data=dat_long)
 summary(m2)
 
 # compare it with the random intercept-only model
 anova(m2, m1)
 
-# add read as a level 1 predictor
+# add read as a fixed level 1 predictor
 m3 <- lmer(anti ~ 1 + time + read + (1|id), REML=F, data=dat_long)
 summary(m3)
 
@@ -153,20 +153,25 @@ anova(m3, m2)
 # 5. Add the time invariant predictor(s) to the model.
 
 ```{r}
-# add momage and homecog as level 2 predictors to the model
+# add momage and homecog as fixed level 2 predictors
 m4a <- lmer(anti ~ 1 + time + momage + homecog + (1|id), REML=F, data=dat_long)
 summary(m4a)
 
 # compare the model with both level 2 predictors with the best model without them
 anova(m4a, m2)
 
-# momage not significant - should be removed
+# anova shows signficantly better fit with the two added parameters, but momage is not significant and should be removed
 
 # remove momage from the model and keep only homecog
 m4b <- lmer(anti ~ 1 + time + homecog + (1|id), REML=F, data=dat_long)
 summary(m4b)
 
-# compare the model with homecog with the best model with only level 1 predictors
+# compare the model with only homecog with the model with both level 2 predictors:
+anova(m4b, m4a)
+
+# as we saw before, adding momage does not improve the the model and only homecog should be kept 
+
+# compare the model with homecog and the best model with only level 1 predictors
 anova(m4b, m2)
 ```
 
