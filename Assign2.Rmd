@@ -33,8 +33,13 @@ kable(summary(dat_long[,-1]))
 We see that the *time* variable ranges from 1 to 4, which means that the first occasion is coded as 1. This means that the intercept cannot be interpreted meaningfully (the time variable will never be equal to 0). Therefore, we will recode the time variable and set its range from 0 to 3, so that the intercept is the predicted outcome for the first occasion when all other predictors are equal to 0. Looking at the ranges of the other predictors, we see that 0 is not a plausible value for any of them. This again means that the intercept will not be meaningful and we will have to extrapolate to interpret it. We will center the three predictors (*momage*, *read*, *homecog*), so that the intercept can be interpreted as the predicted outcome at the first occasion for a person with average values on all the other predictors.
 
 ```{r}
+# rescale the time variable
 dat_long$time <- dat_long$time - 1
+
+# center the three continous predictors
 dat_long[,-c(1, 4)] <- scale(dat_long[,-c(1, 4)], scale=F)
+
+# check summary statistics again
 kable(summary(dat_long[,-1]))
 ```
 
@@ -72,6 +77,8 @@ ggplot(dat_long,
        theme_minimal() +
        xlab("Reading recognition score") +
        ylab("Behaviour Problems Index")
+       
+# a scatterplot for each of the time invariant predictors and the aggregated outcome:
 ```
 
 
@@ -116,13 +123,13 @@ ICC
 # 3. Add the time-varying predictor(s).
 
 ```{r}
-# add time
+# add time as a level 1 predictor
 m2 <- lmer(anti ~ 1 + time + (1|id), REML=F, data=dat_long)
 summary(m2)
 
 anova(m2, m1)
 
-# add read
+# add read as a level 1 predictor
 m3 <- lmer(anti ~ 1 + time + read + (1|id), REML=F, data=dat_long)
 summary(m3)
 
@@ -144,16 +151,20 @@ anova(m3, m2)
 # 5. Add the time invariant predictor(s) to the model.
 
 ```{r}
+# add momage and homecog as level 2 predictors to the model
 m4a <- lmer(anti ~ 1 + time + momage + homecog + (1|id), REML=F, data=dat_long)
 summary(m4a)
 
+# compare the model with both level 2 predictors with the model without them
 anova(m4a, m2)
 
 # momage not significant - should be removed
 
+# remove momage from the model and keep only homecog
 m4b <- lmer(anti ~ 1 + time + homecog + (1|id), REML=F, data=dat_long)
 summary(m4b)
 
+# compare the model with homecog with the model with only level 1 predictors
 anova(m4b, m2)
 ```
 
@@ -177,13 +188,14 @@ anova(m4b, m2)
 ## Provide and interpret the relevant results.
 
 ```{r}
+# add the random slope term for the time variable
 m5 <- lmer(anti ~ 1 + time + homecog + (1 + time|id), REML=F, data=dat_long)
 summary(m5)
 
+# compare the random-slope model with the best fixed-slope model
 anova(m5, m4b)
 
-# variance of u_{time} is significantly different from 0
-# should keep the random slope term
+# we should keep the random slope term
 ```
 
 ## Provide an overall conclusion.
@@ -192,10 +204,12 @@ anova(m5, m4b)
 # 8. If there is a random slope, set up a model that predicts the slope variation.
 
 ```{r}
+# add the predictor of the slope for the time variable
 m6 <- lmer(anti ~ 1 + time + homecog + time*homecog + (1 + time|id), REML=F, data=dat_long)
 
 summary(m6) # homecog is not significant anymore, but the interaction is
 
+# compare the model with the predictor of the slope for time with the model without the predictor
 anova(m6, m5)
 ```
 
