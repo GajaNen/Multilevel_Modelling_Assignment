@@ -127,12 +127,14 @@ ICC
 m2 <- lmer(anti ~ 1 + time + (1|id), REML=F, data=dat_long)
 summary(m2)
 
+# compare it with the random intercept-only model
 anova(m2, m1)
 
 # add read as a level 1 predictor
 m3 <- lmer(anti ~ 1 + time + read + (1|id), REML=F, data=dat_long)
 summary(m3)
 
+# compare the model with both level 1 predictors with the model with just time var
 anova(m3, m2)
 
 # not significant - read should be removed
