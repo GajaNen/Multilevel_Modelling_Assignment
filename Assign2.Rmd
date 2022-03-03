@@ -2,7 +2,9 @@
 title: Assignment 2
 author: Clara Baudry & Gaja Nenadović & Hsuan Lee
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: pdf_document
+output:
+  pdf_document:
+    latex_engine: xelatex
 geometry: margin=0.7in
 ---
 
@@ -71,24 +73,111 @@ ggplot(dat_long,
                    aes(color = "linear"),
                    se = FALSE) +
        geom_smooth(method = "lm",
-                   formula = y ~ x + I(xˆ2),
+                   formula = y ~ x + I(x**2),
                    aes(color = "quadratic"),
                    se = FALSE) +
        theme_minimal() +
        xlab("Reading recognition score") +
        ylab("Behaviour Problems Index")
+
+#xyplot(anti ~ read|dat_long$id, dat_long[dat_long$id==34,],
+#       grid = TRUE,
+#       scales = list(x = list(log = 10, equispaced.log = FALSE)),
+#       type = c("p", "r"), col.line = "darkorange", lwd = 3,
+#       main = "")
+### WORK ON THIS!
        
 # a scatterplot for each of the time invariant predictors and the aggregated outcome:
 ```
+1) If the outcome variable has linear relationship with time, that is, we should test if *antisocial behavior*(outcome variable) shows the linearity with *time* in our case.
+2) If the outcome variable has linear relationship with the predictors. Therefore, we need to check the linear relationship between outcome variable and all the predictors in both level 1 and level 2, which are linear relationship between *antisocial behavior* and *reading recognition skills* for level 1; *antisocial behavior* and *cognitive stimulation*, *antisocial behavior* and *mother’s age* for level 2.
 
+```{r}
+# antisocial behavior with time
+ggplot(data = dat_long,
+aes(x = time, y = anti)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              aes(color = "linear"),
+              se = FALSE) +
+geom_smooth(method = "lm",
+            formula = y ~ x + I(x^2),
+            aes(color = "quadratic"),
+            se = FALSE)
+```
+
+The above plot reveals that both linear line and quadratic line are similar to each other, signifying that the variance explanation's extent of linear and quadratic are almost the same for the relationship between *antisocial behavior* and *time*. Therefore, we could choose linear model for our followed analysis.
+
+```{r}
+# level 1
+# antisocial behavior with reading recognition skills
+ggplot(data = dat_long,
+aes(x = read, y = anti)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              aes(color = "linear"),
+              se = FALSE) +
+geom_smooth(method = "lm",
+            formula = y ~ x + I(x^2),
+            aes(color = "quadratic"),
+            se = FALSE)
+```
+
+As we can see, the linear and quadratic lines of the *reading recognition skills* and *antisocial behavior* display a bit deviance, and the quadratic line seems have a better fit to the distribution of the scatter, meaning that quadratic model explain more variance than linear. However, the difference is not too much, we can therefore use linear line for our analysis.
+
+```{r}
+# level 2
+# antisocial behavior with cognitive stimulation
+ggplot(data = dat_long,
+aes(x = homecog, y = anti)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              aes(color = "linear"),
+              se = FALSE) +
+geom_smooth(method = "lm",
+            formula = y ~ x + I(x^2),
+            aes(color = "quadratic"),
+            se = FALSE)
+```
+
+The above plot reveals that both linear line and quadratic line are similar to each other, signifying that the variance explanation's extent of linear and quadratic are almost the same for the relationship between *antisocial behavior* and *cognitive stimulation*. Therefore, we could choose linear model for our followed analysis.
+
+```{r}
+# level 2
+# antisocial behavior with mother’s age.
+ggplot(data = dat_long,
+aes(x = momage, y = anti)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              aes(color = "linear"),
+              se = FALSE) +
+geom_smooth(method = "lm",
+            formula = y ~ x + I(x^2),
+            aes(color = "quadratic"),
+            se = FALSE)
+```
+
+It could be seen that the difference between linear and quadratic lines are little, which means that the variance explanation's extent of linear and quadratic are almost the same for the relationship between *antisocial behavior* and *mother’s age*. Therefore, we could choose linear model for our followed analysis.
 
 ## Check for outliers, report.
-
+From the scatter plot, we can observe that there are few outliers which score higher than 8. However, since there are 221 observations in our data, these few higher score is acceptable. Therefore, we will keep these higher score in the followed analysis.
 
 
 # 2. Answer the question: should you perform a multilevel analysis?
 
+
 ## What is the mixed model equation?
+Equation of level 1:
+
+$Anti_{ti} = π_{0i} + e_{ti}$
+
+Equation of level 2:
+
+$π_{0i} = β_{00} + u_{0i}$
+
+Mixed Model Equation :
+
+$Anti_{ti} = β_{00} + u_{0i} + e_{ti}$
 
 ## Provide and interpret the relevant results.
 
@@ -108,19 +197,62 @@ anova(m1, m0)
 
 # yes, we should use a multilevel model
 ```
+Model_1 is significantly different from model_0 as indicated by $χ^2(1, N = 221) = 231.97$, $p<.001$. This means that the individula-level adjustment to the intercept $u_{0i}$ to the overall intercept $π_0i$ is a significant addition to the model.
 
 ## What is the intraclass correlation?
+Base on the ICC formula, we can compute and get:
+
+$ρ = \frac{σ^2_{u0}}{(σ^2_e + σ^2_{u0})} = \frac{1.579}{ (1.579 + 1.741)} = 0.48$.
 
 ```{r}
 ICC <- 1.579/(1.579+1.741)
 ICC
 ```
 
-## What is your conclusion regarding the overall question regarding the necessity of performing a multilevel analysis?
+Therefore, the intraclass correlation is 0.48.
 
+## What is your conclusion regarding the overall question regarding the necessity of performing a multilevel analysis?
+Due to the significant difference between model_0 and model_1 with $χ^2(1, N = 221) = 231.97$, $p<.001$, it could therefore be concluded that the intercept of *antisocial behavior* is significantly influenced by the individual-level. Base on this perspective, the ICC with 0.48 ($ρ_{school} = 0.48$) in our case also signifies that there indeed are the significant difference of *antisocial behavior* in the individual-level, and the 48% variance could be explained by the individual-level.
+
+Therefore, we should adopt multilevel analysis to our analysis.
 
 
 # 3. Add the time-varying predictor(s).
+Three steps will be implemented here, the first is to create model_2 as a baseline model, adding the variable *time* into model_2 for inspecting if time is a significant predictor that improve the model and calculating $R^2$ values to compare the model with time-varying predictors in followed analysis; the second is to create model_3 which add *time-varying predictor*(*read*) based on the previous model, we will use grand mean center to the time-varying predictor(*read*) here, then checking if *time-varying predictor*(*read*) is a significant predictor that improve the model. The equation for model_2 and model_3 are:
+
+model_2 (baseline model):
+
+Equation of level 1:
+
+$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
+
+Equation of level 2:
+
+$π_{0i} = β_{00} + u_{0i}$
+
+$π_{1i} = β_{10}$
+
+Mixed Model Equation :
+
+$Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
+
+model_3 (time-varying predictors):
+
+Equation of level 1:
+
+$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + π_{2i}X_{ti} + e_{ti}$
+
+Equation of level 2:
+
+$π_{0i} = β_{00} + u_{0i}$
+
+$π_{1i} = β_{10}$
+
+$π_{2i} = β_{20}$
+
+Mixed Model Equation :
+
+$Anti_{ti} = β_{00} + β_{10}T_{ti} + β_{20}X_{ti} + u_{0i} + e_{ti}$
 
 ```{r}
 # add time as a fixed level 1 predictor
@@ -141,16 +273,63 @@ anova(m3, m2)
 ```
 
 ## Provide and interpret the relevant results and provide your overall conclusion.
+Base on the results, the intercept is significant between model_2 (adding the variable *time*) and model_1 (the model that haven't added time as a predictor), indicated as $t(220) = 10.084, p <.01$. The intercept($β_{00}$) is equal to 1.38, meaning that if all the predictors are equal to 0, the *antisocial behavior* would be 1.38, that is, people are expected to obtain the score of *antisocial behavior* in 1.38 at first measurement. In terms of the coefficient of *time*($β_{10}$) which also shows the significance with the value 0.18 ($t(883) = 4.513, p <.01$), signifying that individuals score of *antisocial behavior* increase by 0.21 with one unit increase in *time*. We can therefore confirm that occasion is a significant predictor to the *antisocial behavior*, hence we should keep variable *time* in our model.
 
+On the other hand, after adding the time-varying predictor(*read*) as model_3, even though both the intercept($β_{00}$) and the coefficient of *time*($β_{10}$) do show the significant difference with model_2 (adding the variable *time*) that intercept from model_2's 1.38 to model_3's 1.29 ($t(220) =  5.924, p <.01$), the coefficient of *time*($β_{10}$) from 0.18 to 0.21307 ($t(883) = 2.729, p <.05$), the time-varying predictor *reading recognition skills*($β_{20}$) is not significant ($t(883) = -0.0337, p >.01$), indicating that the time-varying predictor *reading recognition skills* does not provide too much influence to the *antisocial behavior*. Therefore, we should drop out the predictor. 
+
+The new model's equation become (same as model_2):
+
+$Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
 
 
 # 4. On which level or levels can you expect explained variance?
+Level 1 and level 2
+
+Baseline: model with time
+
 
 ## Calculate and interpret the explained variances.
+**a. Calculate and interpret the explained variances.**
 
+In general situation, both level-1 and level-2 explained variance are important, however, since the level 2 predictor *reading recognition skills* does not improve the model, so we eliminate it from the model, in our case, there is no longer a level 2 predictor anymore, base on this perspective, plus the level-1 predictor *time* is significant, and keep in the model, we therefore expect the explained variance of level-1. However, we will also inspect the explained variances in level-2.
+
+We have level 1 and level 2 because time explains both.
+
+The formula for the explained variances of level-1 is:
+
+$R^2_{Level1} = \frac{σ^2_{e(model2)} - σ^2_{e(model3)}}{σ^2_{e(model2)}} = \frac{1.689 - 1.693}{1.689} = 0.00$
+
+```{r}
+(1.689 - 1.693) / 1.689
+```
+
+
+The formula for the explained variances of level-2 is:
+
+$R^2_{Level2} = \frac{σ^2_{u0(model2)} - σ^2_{u0(model3)}}{σ^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+```{r}
+(1.592 - 1.576) / 1.592
+```
+
+In conclusion, both level-1($R^2 = .00$) and level-2($R^2 = .01$) are too small, indicating that model_3 does not explain more in variance. We can be more sure to remove predictor *read* from our model.
 
 
 # 5. Add the time invariant predictor(s) to the model.
+Two predictors are in level 2, which are *mother’s age* and *cognitive stimulation*. Here, we are going to use grand mean center to both variables, and specify these two variables into the new model, model_4, for testing if each variable can improve the model. The equation to model_4 is:
+
+Equation of level 1:
+
+$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
+
+Equation of level 2:
+
+$π_{0i} = β_{00} + β_{01}momage + β_{02}homecog + u_{0i}$
+
+$π_{1i} = β_{10}$
+
+Mixed Model Equation :
+
+$Anti_{ti} = β_{00} + β_{01}momage + β_{02}homecog + β_{10}T_{ti} + u_{0i} + e_{ti}$
 
 ```{r}
 # add momage and homecog as fixed level 2 predictors
@@ -175,22 +354,72 @@ anova(m4b, m4a)
 anova(m4b, m2)
 ```
 
-## Provide and interpret the relevant results and provide your overall conclusion
+The most important thing we notice here is that the time-invariant variable *momage* does not show the significance to the model, which means that mom's age does not have the impact to *antisocial behavior*, therefore, we will create a new model called model_4a that drop variable *momage*, and use this model to compare with model_2 again.
+```{r}
+m4a <- lmer(anti ~ 1 + time + homecog + (1|id) , REML = FALSE, data = dat_long)
+summary(m4a)
+anova(m2, m4a)
+```
 
+The equation become:
+
+Equation of level 1:
+
+$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
+
+Equation of level 2:
+
+$π_{0i} = β_{00} + β_{02}homecog + u_{0i}$
+
+$π_{1i} = β_{10}$
+
+Mixed Model Equation :
+
+$Anti_{ti} = β_{00} + β_{02}homecog + β_{10}T_{ti} + u_{0i} + e_{ti}$
+
+## Provide and interpret the relevant results and provide your overall conclusion
+Base on the results, the intercept is significant between model_4a (adding time invariant predictor) and model_2 (add *time* as a predictor), indicated as $t(220) = 10.213, p <.01$. The intercept($β_{00}$) is equal to 1.38, meaning that if all the predictors are equal to 0, the *antisocial behavior* would be 1.38, however, the intercept here is not meaningful, since *mom's age* could not be 0 => we centered mom's age!!!!
+
+On the other hand, there is only one time-invariant predictor displaying the significance, which is *cognitive stimulation* ($t(220) = -3.457, p <.01$), in contrast, the other time-invariant predictor *mom's age* does not show the significance to the model ($t(220) = -0.019, p >.05$), signifying that mom's age does not have the impact to *antisocial behavior*, hence, we eliminate the predictor *mom's age* from our model. The coefficient of *cognitive stimulation*($β_{02}$) therefore become -0.13, which indicate that the individual is expected to obtain 0.13 lower at *antisocial behavior* with one unit increase to the average *cognitive stimulation*.
+
+In terms of the coefficient of *time*($β_{10}$) which also shows the significance with the value 0.18 ($t(883) = 4.513, p <.01$), signifying that individuals score of *antisocial behavior* increase by 0.18 with one unit increase in *time*, if the individual has the average score at *cognitive stimulation*. 
 
 
 # 6. On which level or levels can you expect explained variance?
+Since we add one new predictor *cognitive stimulation* to level-2 as our model_4a, we therefore expect the explained variance in level-2 here.
 
 ## Calculate and interpret the explained variances.
+The formula for the explained variances of level-2 is:
 
+$R^2_{Level2} = \frac{σ^2_{u0(model2)} - σ^2_{u0(model4a)}}{σ^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+```{r}
+(1.592 - 1.488) / 1.592
+```
+
+In conclusion, the explained variance of level-2($R^2 = .07$) is .07, indicating that the adding level-2 predictor *cognitive stimulation* can explain 7% of the variance between individuals' *antisocial behavior*.
 
 
 # 7. For the time-varying predictor(s), check if the slope is fixed or random.
 
 ## What are the null- and alternative hypotheses?
 
-- $H_{0}: \sigma_{u1} = 0$.
-- $H_{1}: \sigma_{u1} > 0$.
+Two things we should check here, the first is that we should inspect the random slope for *time*; the second is that even though the time-varying variable *reading recognition* shows insignificant in the previous model, it can still have random slope, hence, we should take variable *read* back to the model for testing the random slope. Therefore, we will create two models to each, and there would be two null hypothesis:
+
+For *time*:
+
+The null hypothesis is that *time* does not have the random slope. The alternative *time* has the random slope. 
+
+$H_0: σ^2_{u_1}=0$
+
+$H_1: σ^2_{u_1}≠0$ 
+
+For *reading recognition*:
+
+The null hypothesis is that *reading recognition* does not have the random slope. The alternative *reading recognition* has the random slope. 
+
+$H_0: σ^2_{u_2}=0$
+
+$H_1: σ^2_{u_2}≠0$ 
 
 ## Provide and interpret the relevant results.
 
@@ -211,6 +440,10 @@ anova(m5, m4b)
 # 8. If there is a random slope, set up a model that predicts the slope variation.
 
 ```{r}
+m6_mom <- lmer(anti ~ 1 + time + homecog + time*momage + time*homecog + (1 + time|id), REML=F, data=dat_long)
+
+summary(m6_mom)
+
 # add the predictor of the slope for the time variable
 m6 <- lmer(anti ~ 1 + time + homecog + time*homecog + (1 + time|id), REML=F, data=dat_long)
 
@@ -221,7 +454,10 @@ anova(m6, m5)
 ```
 
 ## Provide and interpret the relevant results and provide your overall conclusion.
-
+momage not singificant
+time*momage not significant
+homecog not significant
+time*homecog 
 
 # 9. Decide on a final model.
 
@@ -232,6 +468,8 @@ anova(m6, m5)
 ```{r}
 # level 1:
 qqnorm(residuals(m6), main = "Q-Q plot for the first level residuals")
+qqline(residuals(m6))
+
 #qqline(residuals(m6))
 
 
@@ -239,9 +477,13 @@ qqnorm(residuals(m6), main = "Q-Q plot for the first level residuals")
 
 # intercept
 qqnorm(ranef(m6)$id[,1], main = "Q-Q plot for the intercept")
+qqline(ranef(m6)$id[,1])
+
 #qqline(ranef(m6)$id[,1])
 
 # slope
 qqnorm(ranef(m6)$id[,2], main = "Q-Q plot for the slope of time variable")
+qqline(ranef(m6)$id[,2])
+
 #qqline(ranef(m6)$id[,2])
 ```
