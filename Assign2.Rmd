@@ -285,43 +285,11 @@ Therefore, we should account for this dependence and variation by adopting the m
 
 # 3. Add the time-varying predictor(s).
 
-Three steps will be implemented here. The first one is to create the model 2 with the fixed level 1 variable *time* as a baseline model. We will use it in further analysis to calculate $R^2$ values for subsequent models. The second step is to create model 3, adding the *fixed time-varying level 1 predictor read*, and check if it is a significant predictor. 
+We will proceed with adding time-varying predictors in two steps:
 
-The equation for model_2 and model_3 are:
+- create the model 2 with the fixed predictor *time*, which will be used as a baseline model to calculate $R^2$; **add some more about why this one is a baseline**
 
-model_2 (baseline model):
-
-Equation of level 1:
-
-$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
-
-Equation of level 2:
-
-$π_{0i} = β_{00} + u_{0i}$
-
-$π_{1i} = β_{10}$
-
-Mixed Model Equation :
-
-$Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
-
-model_3 (time-varying predictors):
-
-Equation of level 1:
-
-$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + π_{2i}X_{ti} + e_{ti}$
-
-Equation of level 2:
-
-$π_{0i} = β_{00} + u_{0i}$
-
-$π_{1i} = β_{10}$
-
-$π_{2i} = β_{20}$
-
-Mixed Model Equation :
-
-$Anti_{ti} = β_{00} + β_{10}T_{ti} + β_{20}X_{ti} + u_{0i} + e_{ti}$
+- create the model 3 by adding the fixed predictor *read*. 
 
 ```{r}
 # add time as a fixed level 1 predictor
@@ -341,14 +309,28 @@ anova(m3, m2)
 
 ## Provide and interpret the relevant results and provide your overall conclusion.
 
-The intercept in model 2 with fixed *time* is statistically significant, $\beta_{00} = 1.38, t(400) = 13.872, p < .001$. It can be interpreted as the average Behaviour Problems Index at the first occasion. The coefficient for *time* is also significant, $\beta_{time}=0.18, t(683) = 4.513, p <.001$. It means that with each one point increase in time, that is with each measurement occasion, the expected *antisocial behavior* score increases by 0.18.
+**Model 2 with fixed time**
 
-Comparing the model with *time* as a predictor and the random intercept-only model, we see that the former fits the data better, $\chi(1)^2=20.06, p < .001$.
-**add AIC**
+The intercept is statistically significant, $\beta_{00} = 1.55, t(400) = 13.872, p < .001$. It can be interpreted as the average Behavior Problems Index at the first occasion. The coefficient for *time* is also significant, $\beta_{time}=0.18, t(683) = 4.513, p <.001$. It means that with each one point increase in time, that is with each measurement occasion, the expected *antisocial behavior* score increases by 0.18.
 
-In model 3, we add the fixed time-varying predictor *read*. Both the intercept ($β_{00}=1.50, t(580) = 9.94, p <.001$) and the coefficient of *time* ($β_{time}=0.21, t(882) = 2.729, p < .01$) are again significant. The intercept can be now interpreted as the predicted *anti* score for the first occasion for a person with average *read* score. The coefficient for *time* can be interpreted as follows: with each measurement occasion, the predicted *anti* score goes up by .21 when *read* is held constant. We see that *reading recognition skills*($\beta_{read}$) is not significant ($\beta_{read} = -0.0337, t(831) = -0.542, p > .05$). We can conclude that it does not provide additional information in predicting *antisocial behavior*. Therefore, we should drop it out of the model. 
+Comparing the model with *time* and the random intercept-only model, we see that the former fits the data better, $\chi^2(1)=20.06, p < .001$. AIC also indicates that model 2 ($AIC=3325.5$) is better than model 1 ($AIC=3343.5$).
 
-Comparing the model with *time* and the model with both *time* and *read*, we see that adding *read* to the model does not improve its fit, $\chi^2(1)=0.29, p > .05$.
+**Model 3 with fixed time and reading recognition**
+
+Both the intercept ($β_{00}=1.50, t(580) = 9.94, p <.001$) and the coefficient of *time* ($β_{time}=0.21, t(882) = 2.73, p < .01$) are again significant but their values are slightly higher. The intercept can be now interpreted as the predicted Behaviour Problems Index at the first measurement occasion for a person with average *reading recognition* score. The coefficient for *time* can be interpreted as follows: with each measurement occasion, the predicted *antisocial behavior* score goes up by .21 when *read* is held constant. 
+
+We see that *reading recognition skills* is not significant ($\beta_{read} = -0.03, t(831) = -0.54, p > .05$).
+
+Comparing the model with *time* and the model with both *time* and *read*, we see that adding *read* does not improve the fit of the model, $\chi^2(1)=0.29, p > .05$. AIC values further confirm this, $AIC_{m2}=3325.5, AIC_{m3}=3327.3$. 
+
+**Overall conclusion**
+
+- We observed a linear time trend where Behavior Problems Index increases at each measurement occasion. Furthermore, adding the *time* variable as a predictor improves the fit of the model.
+
+- *Reading recognition skills* does not provide additional information in predicting *antisocial behavior* and does not improve the fit of the model. It should not be included as a fixed predictor in subsequent models.
+
+The best of these two models is the one with only *time*, model 2. 
+Its equation is:
 
 $Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
 
@@ -356,9 +338,6 @@ $Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
 # 4. On which level or levels can you expect explained variance?
 
 Before the analysis, we expect that the time-varying predictors may explain variance on each of the two levels.
-
-Baseline: model with time
-
 
 ## Calculate and interpret the explained variances.
 **a. Calculate and interpret the explained variances.**
@@ -559,8 +538,45 @@ qqline(ranef(m6)$id[,2])
 
 **equations**
 
+## Question 3
 
-###
+The equation for model_2 and model_3 are:
+
+model_2 (baseline model):
+
+Equation of level 1:
+
+$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
+
+Equation of level 2:
+
+$π_{0i} = β_{00} + u_{0i}$
+
+$π_{1i} = β_{10}$
+
+Mixed Model Equation :
+
+$Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
+
+model_3 (time-varying predictors):
+
+Equation of level 1:
+
+$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + π_{2i}X_{ti} + e_{ti}$
+
+Equation of level 2:
+
+$π_{0i} = β_{00} + u_{0i}$
+
+$π_{1i} = β_{10}$
+
+$π_{2i} = β_{20}$
+
+Mixed Model Equation :
+
+$Anti_{ti} = β_{00} + β_{10}T_{ti} + β_{20}X_{ti} + u_{0i} + e_{ti}$
+
+## Question 
 
 The equation become:
 
