@@ -126,6 +126,7 @@ ggplot(data=dat_long[which(dat_long$id > 900 & dat_long$id <= 2000),], aes(x=rea
         axis.text=element_text(size=14),
         strip.text=element_text(size=14))
 
+# these plots have been added (check the 4 plots above)
 #xyplot(anti ~ read|dat_long$id, dat_long[dat_long$id==34,],
 #       grid = TRUE,
 #       scales = list(x = list(log = 10, equispaced.log = FALSE)),
@@ -226,6 +227,7 @@ From the scatter plots we can observe that there are few outliers. However, sinc
 
 
 ## What is the mixed model equation?
+
 Equation of level 1:
 
 $Anti_{ti} = π_{0i} + e_{ti}$
@@ -254,12 +256,12 @@ summary(m1)
 # comparison of m0 and m1
 anova(m1, m0)
 ```
-Model 1 fits significantly better than model 0 as indicated by $χ^2(1) = 231.97$, $p<.001$. This means that there are differences in intercept between children ($\sigma_{u0}^2$ > 0) and accounting for them by adding the random intercept term improves the model. 
 
-*This means that the individula-level adjustment to the intercept $u_{0i}$ to the overall intercept $π_0i$ is a significant addition to the model.*
+Model 1 fits significantly better than model 0, $χ^2(1) = 231.97$, $p<.001$. This points to the significant differences in the intercept (average *Behavior Problems Index*) between children ($\sigma_{u0}^2 > 0$).
 
 ## What is the intraclass correlation?
-Based on the ICC formula, we can compute and get:
+
+The formula for ICC is:
 
 $ρ = \frac{σ^2_{u0}}{(σ^2_e + σ^2_{u0})} = \frac{1.579}{ (1.579 + 1.741)} = 0.48$.
 
@@ -268,13 +270,17 @@ ICC <- 1.579/(1.579+1.741)
 ICC
 ```
 
-Intraclass correlation is 0.48. We can conclude that the proportion of the total unexplained variance accounted by the grouping structure (child level) is quite high.
+Intraclass correlation equals 0.48. We see that the proportion of the total unexplained variance accounted for by the individual-level differnces is quite high.
 
 ## What is your conclusion regarding the overall question regarding the necessity of performing a multilevel analysis?
 
-We have shown that there is a significant difference between model 0 and model 1.  Therefore, it could be concluded that the intercept (mean) of *antisocial behavior* varies on the individual-level. Additionally, the ICC ($ρ_{school} = 0.48$) also signifies that there indeed are important differences in *antisocial behavior* on the individual-level, and 48% of the total variance is explained by it.
+We have shown that the data has a multilevel structure:
 
-Therefore, we should adopt multilevel analysis.
+- $\sigma_{u0}^2 > 0$: accounting for the variation in the *antisocial behavior* across children by adding the random intercept term significantly improves the model;
+
+- the observations are not independent: the correlation of *anti* score on two occasions for the same child is considerably large, 0.48. 
+
+Therefore, we should account for this dependence and variation by adopting the multilevel analysis.
 
 
 # 3. Add the time-varying predictor(s).
@@ -443,6 +449,8 @@ The model with both *homecog* and *momage* does not fit significantly better tha
 Comparing the better of these two models, that is model 4b with only *homecog*, however, fits better than the best model with only level 1 predictors (model 2), $\chi^2(1)=11.64, p < .001$. 
 
 We conclude that only *homecog* is an important predictor of the differences in *anti* between the children and should be kept in the model. 
+
+*predictor of intercept* explains the differences between the children on the first measurement occasion.
 
 # 6. On which level or levels can you expect explained variance?
 
