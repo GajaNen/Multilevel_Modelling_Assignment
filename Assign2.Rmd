@@ -32,6 +32,7 @@ dat_long <- pivot_longer(data=dat[,-c(10, 13)],
 # summary statistics
 kable(summary(dat_long[,-1]))
 ```
+
 We see that the *time* variable ranges from 1 to 4, which means that the first occasion is coded as 1. This means that the intercept cannot be interpreted meaningfully (the time variable will never be equal to 0). Therefore, we will recode the time variable and set its range from 0 to 3, so that the intercept is the predicted outcome for the first occasion when all other predictors are equal to 0. Looking at the ranges of the other predictors, we see that 0 is not a plausible value for any of them. This again means that the intercept will not be meaningful and we will have to extrapolate to interpret it. We will center the three predictors (*momage*, *read*, *homecog*), so that the intercept can be interpreted as the predicted outcome at the first occasion for a person with average values on all the other predictors.
 
 ```{r}
@@ -49,10 +50,8 @@ As we see from the table, 0 is now a plausible (and meaningful) value for every 
 
 ## Check the linearity assumption, report and include plots.
 
-
 1) If the outcome variable has linear relationship with time, that is, we should test if *antisocial behavior*(outcome variable) shows the linearity with *time* in our case.
 2) If the outcome variable has linear relationship with the predictors. Therefore, we need to check the linear relationship between outcome variable and all the predictors in both level 1 and level 2, which are linear relationship between *antisocial behavior* and *reading recognition skills* for level 1; *antisocial behavior* and *cognitive stimulation*, *antisocial behavior* and *mother’s age* for level 2.
-
 
 ```{r}
 # a scatterplot with a linear and quadratic trend for each of the time-varying predictors and the outcome
@@ -106,7 +105,7 @@ ggplot(data=dat_long[which(dat_long$id > 900 & dat_long$id <= 2000),], aes(x=tim
         axis.text=element_text(size=14),
         strip.text=element_text(size=14))
 
-# the plot anti~read seprately for different persons
+# the plot anti~read separately for different persons
 ggplot(data=dat_long[which(dat_long$id <= 900),], aes(x=read,y=anti)) +
   geom_point() +
   stat_smooth(method="lm", fullrange=TRUE) +
@@ -220,11 +219,10 @@ geom_smooth(method = "lm",
 It could be seen that the difference between linear and quadratic lines are little, which means that the variance explanation's extent of linear and quadratic are almost the same for the relationship between *antisocial behavior* and *mother’s age*. Therefore, we could choose linear model for our followed analysis.
 
 ## Check for outliers, report.
+
 From the scatter plots we can observe that there are few outliers. However, since there are 221 observations in our data, these few higher score is acceptable. Therefore, we will keep these higher score in the followed analysis.
 
-
 # 2. Answer the question: should you perform a multilevel analysis?
-
 
 ## What is the mixed model equation?
 
@@ -317,15 +315,13 @@ Comparing the model with *time* and the random intercept-only model, we see that
 
 **Model 3 with fixed time and reading recognition**
 
-Both the intercept ($β_{00}=1.50, t(580) = 9.94, p <.001$) and the coefficient of *time* ($β_{time}=0.21, t(882) = 2.73, p < .01$) are again significant but their values are slightly higher. The intercept can be now interpreted as the predicted Behaviour Problems Index at the first measurement occasion for a person with average *reading recognition* score. The coefficient for *time* can be interpreted as follows: with each measurement occasion, the predicted *antisocial behavior* score goes up by .21 when *read* is held constant. 
-
-We see that *reading recognition skills* is not significant ($\beta_{read} = -0.03, t(831) = -0.54, p > .05$).
+Both the intercept ($β_{00}=1.50, t(580) = 9.94, p <.001$) and the coefficient of *time* ($β_{time}=0.21, t(882) = 2.73, p < .01$) are again significant, but their values are slightly higher. The intercept now represents the Behavior Problems Index that would be expected at the first measurement occasion when the *reading recognition* score at that occasion is average. The coefficient for *time* can be interpreted as follows: with each measurement occasion, the predicted *antisocial behavior* score goes up by .21 when *read* is held constant. We see that *reading recognition skills* is not significant ($\beta_{read} = -0.03, t(831) = -0.54, p > .05$).
 
 Comparing the model with *time* and the model with both *time* and *read*, we see that adding *read* does not improve the fit of the model, $\chi^2(1)=0.29, p > .05$. AIC values further confirm this, $AIC_{m2}=3325.5, AIC_{m3}=3327.3$. 
 
 **Overall conclusion**
 
-- We observed a significant linear time trend where Behavior Problems Index increases with each measurement occasion. Furthermore, adding the *time* variable as a predictor improves the fit of the model.
+- We observed a significant linear time trend, where Behavior Problems Index increases with each measurement occasion. Furthermore, adding the *time* variable as a predictor improves the fit of the model.
 
 - *Reading recognition skills* does not provide additional information in predicting *antisocial behavior* and does not improve the fit of the model. It should not be included as a fixed predictor in subsequent models.
 
@@ -337,7 +333,7 @@ $Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
 
 # 4. On which level or levels can you expect explained variance?
  
-Generally, both level 1 and level 2 variance can be explained by the level 1 (time-varying) predictors. $R^2$ in the multilevel analysis of longitudinal data is calculated based on the reduction in unexplained variance components on each level compared to the model which includes only *time*. This is due to underestimation of variance on level 2 and, consequently, overestimation of variance on level 1 in the intercept-only model, which makes it inappropriate as a benchmark model.  
+Generally, both level 1 and level 2 variance can be explained by the level 1 (time-varying) predictors. $R^2$ in the multilevel analysis of longitudinal data is calculated based on the reduction in unexplained variance components on each level compared to the model which includes only *time* instead of the random intercept-only model. This is due to the underestimation of variance on level 2 and, consequently, overestimation of variance on level 1 in the random intercept-only model, which render it inappropriate as a benchmark model.  
 
 However, the only predictor that we added to the baseline model, that is *reading recognition skills*, is not significant, does not improve the model and will not be used in subsequent models as a fixed predictor. Therefore, we expect $R^2$ to be very low on both levels. 
 
@@ -351,7 +347,7 @@ $R^2_{Level1} = \frac{σ^2_{e(model2)} - σ^2_{e(model3)}}{σ^2_{e(model2)}} = \
 (1.689 - 1.693) / 1.689
 ```
 
-The formula for the explained variances on level-2 is:
+The formula for the explained variance on level-2 is:
 
 $R^2_{Level2} = \frac{σ^2_{u0(model2)} - σ^2_{u0(model3)}}{σ^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
 
@@ -364,23 +360,8 @@ We see that explained variance on both level-1 ($R_{1}=-0.002$) and level-2($R_{
 
 
 # 5. Add the time invariant predictor(s) to the model.
-There are two predictors on level 2, *mother’s age* and *cognitive stimulation*. 
 
-The equation to model_4 is:
-
-Equation of level 1:
-
-$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
-
-Equation of level 2:
-
-$π_{0i} = β_{00} + β_{01}momage + β_{02}homecog + u_{0i}$
-
-$π_{1i} = β_{10}$
-
-Mixed Model Equation :
-
-$Anti_{ti} = β_{00} + β_{01}momage + β_{02}homecog + β_{10}T_{ti} + u_{0i} + e_{ti}$
+There are two variables at the child level, *mother’s age* and *cognitive stimulation*.
 
 ```{r}
 # add momage and homecog as fixed level 2 predictors
@@ -393,7 +374,7 @@ anova(m4a, m2)
 
 We notice that only the time-invariant variable *momage* is not a statistically significant predictor, $\beta_{momage}=-0.0009, t(221)=-0.02, p > .05$.
 
-Comparing the model with *momage* with the best model with only level 1 predictors, we see that the former model fits better, $\chi^2(2)=11.642, p < .01$, but this is due to the significance of the second level 2 predictor, *homecog*. 
+Comparing this model with the best model with only level 1 predictor, we see that the former model fits better, $\chi^2(2)=11.642, p < .01$. However, since we now added 2 parameters, this significant reduction in the deviance of the model is probably due to the significance of the other level 2 predictor, *homecog*. 
 
 Therefore, we will create a new model, model 4b, without *momage*, and interpret the coefficients for this modified model. 
 
@@ -409,39 +390,41 @@ anova(m4b, m4a)
 anova(m4b, m2)
 ```
 
-
 ## Provide and interpret the relevant results and provide your overall conclusion
 
-As we see, the intercept is again significant, $\beta_{00}=1.55, t(410) = 14.138, p <.001$. It represents the predicted value for the *anti* variable at the first occasion for a child who received average *cognitive stimulation*. 
+As we see, the intercept is significant, $b_{0}=1.55, t(410) = 14.138, p <.001$. It represents the predicted Behavior Problems Index at the first occasion for a child who has an average *cognitive stimulation* score. 
 
-Both predictors, that is *time*, $\beta_{time}=0.18, t(663) = 4.51, p <.001$, and *cognitive stimulation*, $\beta_{homecog}=-0.13, t(221) = -3.46, p < .001$, are significant. 
+Both predictors, that is *time*, $b_{time}=0.18, t(663) = 4.51, p <.001$, and *cognitive stimulation*, $b_{homecog}=-0.13, t(221) = -3.46, p < .001$, are significant. 
 
 We can interpret them as follows: 
-- with each one point increase in *time* (each measurement occasion), the expected *antisocial behavior* score goes up by 0.18, when *homecog* is kept constant;
-- with each one unit increase in *cognitive stimulation*, the expected *anti* score decreases by 0.13, when *time* is kept constant. 
 
-The model with both *homecog* and *momage* does not fit significantly better than the model with only *homecog*, $\chi^2(1)=0.00, p > .05$. 
+- with each one point increase in *time* (each measurement occasion), the expected *antisocial behavior* score goes up by 0.18, when *homecog* is kept constant, that is when comparing within children who have the same *cognitive stimulation* score;
 
-Comparing the better of these two models, that is model 4b with only *homecog*, however, fits better than the best model with only level 1 predictors (model 2), $\chi^2(1)=11.64, p < .001$. 
+- with each one unit increase in *cognitive stimulation*, the expected *anti* score decreases by 0.13, when *time* is kept constant, that is when comparing children within the same measurement occasion. 
 
-We conclude that only *homecog* is an important predictor of the differences in *anti* between the children and should be kept in the model. 
+For the sake of comparison, we can also check if the model is influenced by leaving *momage* out of it. As we see, the model with both *homecog* and *momage* does not fit significantly better than the model with only *homecog*, $\chi^2(1)=0.00, p > .05$. Moreover, AIC values show that model 4b is better as well, $AIC_{m4a}=3317.8, AIC_{m4b}=3315.8$. 
 
-*predictor of intercept* explains the differences between the children on the first measurement occasion.
+Comparing the model 4b, and the best model with only level 1 predictors, model 2, we see that the former fits better, $\chi^2(1)=11.64, p < .001$. This model also has a lower AIC, $AIC_{m4b}=3315.8$, than model 2, $AIC_{m2}=3325.5$.
+
+**Overall conclusion**
+
+*Cognitive stimulation* is an important predictor of *antisocial behavior* on the child level and will be kept in the model. It explains a part of the differences between children at the first occasion. Conversely, *mother's age* does not provide much additional information in predicting these differences and should not be used as a fixed predictor in subsequent analysis (on its own, without the interaction). 
 
 # 6. On which level or levels can you expect explained variance?
 
-Since we have added only a level 2 predictor, we expect the explained variance only on this level.
+Since we have added only a level 2 predictor, which predicts the intercept for each child, we expect explained variance only on this level (that is, we expect it to explain only the variance of the intercept across children).
 
 ## Calculate and interpret the explained variances.
+
 The formula for the explained variances of level-2 is:
 
 $R^2_{Level2} = \frac{σ^2_{u0(model2)} - σ^2_{u0(model4a)}}{σ^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+
 ```{r}
 (1.592 - 1.488) / 1.592
 ```
 
-In conclusion, the explained variance of level-2($R^2 = .07$) is .07, indicating that the adding level-2 predictor *cognitive stimulation* can explain 7% of the variance between individuals' *antisocial behavior*.
-
+The proportion of explained variance on level-2 is .07. *Cognitive stimulation* can explain 7% of the variance in individuals' *antisocial behavior* at the first occasion.
 
 # 7. For the time-varying predictor(s), check if the slope is fixed or random.
 
@@ -514,22 +497,15 @@ time*homecog
 qqnorm(residuals(m6), main = "Q-Q plot for the first level residuals")
 qqline(residuals(m6))
 
-#qqline(residuals(m6))
-
-
 # level 2:
 
 # intercept
 qqnorm(ranef(m6)$id[,1], main = "Q-Q plot for the intercept")
 qqline(ranef(m6)$id[,1])
 
-#qqline(ranef(m6)$id[,1])
-
 # slope
 qqnorm(ranef(m6)$id[,2], main = "Q-Q plot for the slope of time variable")
 qqline(ranef(m6)$id[,2])
-
-#qqline(ranef(m6)$id[,2])
 ```
 
 
@@ -573,9 +549,9 @@ Mixed Model Equation :
 
 $Anti_{ti} = β_{00} + β_{10}T_{ti} + β_{20}X_{ti} + u_{0i} + e_{ti}$
 
-## Question 
+## Question 5
 
-The equation become:
+The equation to model_4 is:
 
 Equation of level 1:
 
@@ -583,10 +559,11 @@ $Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
 
 Equation of level 2:
 
-$π_{0i} = β_{00} + β_{02}homecog + u_{0i}$
+$π_{0i} = β_{00} + β_{01}momage + β_{02}homecog + u_{0i}$
 
 $π_{1i} = β_{10}$
 
 Mixed Model Equation :
 
-$Anti_{ti} = β_{00} + β_{02}homecog + β_{10}T_{ti} + u_{0i} + e_{ti}$
+$Anti_{ti} = β_{00} + β_{01}momage + β_{02}homecog + β_{10}T_{ti} + u_{0i} + e_{ti}$
+
