@@ -287,7 +287,7 @@ Therefore, we should account for this dependence and variation by adopting the m
 
 We will proceed with adding time-varying predictors in two steps:
 
-- create the model 2 with the fixed predictor *time*, which will be used as a baseline model to calculate $R^2$; **add some more about why this one is a baseline**
+- create the model 2 with the fixed predictor *time*. This model will be used in further analysis as a benchmark to calculate $R^2$ on level 1 and level 2;
 
 - create the model 3 by adding the fixed predictor *read*. 
 
@@ -303,7 +303,7 @@ anova(m2, m1)
 m3 <- lmer(anti ~ 1 + time + read + (1|id), REML=F, data=dat_long)
 summary(m3)
 
-# compare the model with both level 1 predictors with the model with just time var
+# compare the model with both level 1 predictors with the model with just time
 anova(m3, m2)
 ```
 
@@ -325,7 +325,7 @@ Comparing the model with *time* and the model with both *time* and *read*, we se
 
 **Overall conclusion**
 
-- We observed a linear time trend where Behavior Problems Index increases at each measurement occasion. Furthermore, adding the *time* variable as a predictor improves the fit of the model.
+- We observed a significant linear time trend where Behavior Problems Index increases with each measurement occasion. Furthermore, adding the *time* variable as a predictor improves the fit of the model.
 
 - *Reading recognition skills* does not provide additional information in predicting *antisocial behavior* and does not improve the fit of the model. It should not be included as a fixed predictor in subsequent models.
 
@@ -336,19 +336,14 @@ $Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
 
 
 # 4. On which level or levels can you expect explained variance?
+ 
+Generally, both level 1 and level 2 variance can be explained by the level 1 (time-varying) predictors. $R^2$ in the multilevel analysis of longitudinal data is calculated based on the reduction in unexplained variance components on each level compared to the model which includes only *time*. This is due to underestimation of variance on level 2 and, consequently, overestimation of variance on level 1 in the intercept-only model, which makes it inappropriate as a benchmark model.  
 
-Before the analysis, we expect that the time-varying predictors may explain variance on each of the two levels.
+However, the only predictor that we added to the baseline model, that is *reading recognition skills*, is not significant, does not improve the model and will not be used in subsequent models as a fixed predictor. Therefore, we expect $R^2$ to be very low on both levels. 
 
 ## Calculate and interpret the explained variances.
-**a. Calculate and interpret the explained variances.**
 
-Generally, both level 1 and level 2 variance can be explained by the level 1 (time-varying) predictors. However, the only level 1 predictor that we added to the baseline model, that is *reading recognition skills*, is not significant and is eliminated from the model. Therefore, we can informatively compute $R^2$ for the model with *read*, but we expect it to be low for both levels. 
-
-
-Not sure what this means?
-**In general situation, both level-1 and level-2 explained variance are important, however, since the level 2 predictor *reading recognition skills* does not improve the model, so we eliminate it from the model, in our case, there is no longer a level 2 predictor anymore, base on this perspective, plus the level-1 predictor *time* is significant, and keep in the model, we therefore expect the explained variance of level-1. However, we will also inspect the explained variances in level-2.**
-
-The formula for the explained variances of level-1 is:
+The formula for the explained variance on level-1 is:
 
 $R^2_{Level1} = \frac{σ^2_{e(model2)} - σ^2_{e(model3)}}{σ^2_{e(model2)}} = \frac{1.689 - 1.693}{1.689} = 0.00$
 
@@ -356,14 +351,16 @@ $R^2_{Level1} = \frac{σ^2_{e(model2)} - σ^2_{e(model3)}}{σ^2_{e(model2)}} = \
 (1.689 - 1.693) / 1.689
 ```
 
-The formula for the explained variances of level-2 is:
+The formula for the explained variances on level-2 is:
 
 $R^2_{Level2} = \frac{σ^2_{u0(model2)} - σ^2_{u0(model3)}}{σ^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+
 ```{r}
 (1.592 - 1.576) / 1.592
 ```
 
-We see that both level-1 ($R_{1}=-0.002$) and level-2($R_{2}=0.01$) are very low, once again confirming that the model 3 does not explain additional variance on any level and *read* should not be included as a fixed predictor in the subsequent models.
+We see that explained variance on both level-1 ($R_{1}=-0.002$) and level-2($R_{2}=0.01$) is very low, once again confirming that the model 3 does not explain additional variance on any level and *read* should not be included as a fixed predictor in the subsequent models.
+**negative explained variance -> why and not meaningful**
 
 
 # 5. Add the time invariant predictor(s) to the model.
