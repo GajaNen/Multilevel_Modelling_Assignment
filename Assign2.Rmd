@@ -285,7 +285,7 @@ Therefore, we should account for this dependence and variation by adopting the m
 
 We will proceed with adding time-varying predictors in two steps:
 
-- create the model 2 with the fixed predictor *time*. This model will be used in further analysis as a benchmark to calculate $R^2$ on level 1 and level 2;
+- create the model 2 with the fixed predictor *time*. This model will be used in further analyses as a benchmark to calculate $R^2$ on level 1 and level 2;
 
 - create the model 3 by adding the fixed predictor *read*. 
 
@@ -491,13 +491,15 @@ The intercept and coefficients for *time* and *homecog* are still significant, w
 
 We see that adding, besides the coefficient for *read*, the random slope term, covariance between slope for *time* and slope for *read*, as well as the covariance between the intercept and slope for *read* to the model, does not reduce its deviance, $χ^2(4) = 0.2609$, $p>.05$.
 
-*as seen from the plots it doesn't vary*
+*from the plots*
 
 ## Provide an overall conclusion.
 
-We can conclude that there is variation in the relation between time and *antisocial behavior* across children and we should account for it by allowing the random slope for *time*. *Read* does not have a varying slope and including it in the model, together with the other parameter, does not reduce its deviance significantly. 
+We can conclude that the relation between *time* and *antisocial behavior* differs across children and we should account for it by allowing the random slope for *time*. *Read* does not have a varying slope and including it in the model, together with the other parameters, does not improve the fit of the model. 
 
-One thing to note here is that the hypotheses cannot be assessed directly with the test we have used. Since there are 2 additional parameters in m5a, $\sigma^2_{u1}$ and $cov(u1, uo)$, significant $\chi^2$ test does not necessarily reflect significance of $\sigma^2_{u1}$. But even if only the covariance parameter is significant, the variance of the slope is implied. Similarly, there are 4 additional parameters in m5b and ...
+One thing to note here is that the hypotheses cannot be assessed directly with the test we have used. Since there are 2 additional parameters in m5a, $\sigma^2_{u1}$ and $cov(u1, uo)$, significant $\chi^2$ test does not necessarily reflect significance of $\sigma^2_{u1}$. But even if only the covariance parameter is significant, the variance of the slope is implied. 
+
+Similarly, there are 4 additional parameters in m5b and non-significance of $\chi^2$ test does not necessarily reflect non-significance of $\sigma^2_{u2}$. However, since the covariance parameters have to be included in the model with varying slopes, the result of this test does indicate that properly allowing the random slope for *read* does not bring significant additions to the model and there is not much information lost by not accounting for it.
 
 
 # 8. If there is a random slope, set up a model that predicts the slope variation.
@@ -523,6 +525,9 @@ anova(m6b, m6a)
 
 **Model 6a**
 
+
+
+
 **Model 6b**
 
 **Overall conclusion**
@@ -530,6 +535,22 @@ anova(m6b, m6a)
 # 9. Decide on a final model.
 
 ## provide the separate level 1 and 2 model equations, as well as the mixed model equation.
+
+Model 6b is our final model.
+
+Equation of level 1:
+
+$$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$$
+
+Equation of level 2:
+
+$$π_{0i} = β_{00} + β_{01}homecog + u_{0i}$$
+
+$$π_{1i} = β_{10} + β_{11}homecog + u_{1i}$$
+
+Mixed Model Equation :
+
+$$Anti_{ti} = β_{00} + β_{01}homecog + β_{10}T_{ti} + β_{11}homecog*time + u_{0i} + u_{1i}T_{ti} + e_{ti}$$
 
 ## Check the normality assumption for both the level-1 and level-2 errors, report.
 
