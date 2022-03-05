@@ -228,15 +228,15 @@ From the scatter plots we can observe that there are few outliers. However, sinc
 
 Equation of level 1:
 
-$Anti_{ti} = π_{0i} + e_{ti}$
+$$Anti_{ti} = π_{0i} + e_{ti}$$
 
 Equation of level 2:
 
-$π_{0i} = β_{00} + u_{0i}$
+$$π_{0i} = β_{00} + u_{0i}$$
 
 Mixed Model Equation :
 
-$Anti_{ti} = β_{00} + u_{0i} + e_{ti}$
+$$Anti_{ti} = β_{00} + u_{0i} + e_{ti}$$
 
 ## Provide and interpret the relevant results.
 
@@ -268,7 +268,7 @@ ICC <- 1.579/(1.579+1.741)
 ICC
 ```
 
-Intraclass correlation equals 0.48. We see that the proportion of the total unexplained variance accounted for by the individual-level differnces is quite high.
+Intraclass correlation equals 0.48. We see that the proportion of the total unexplained variance accounted for by the individual-level differences is quite high.
 
 ## What is your conclusion regarding the overall question regarding the necessity of performing a multilevel analysis?
 
@@ -398,9 +398,9 @@ Both predictors, that is *time*, $b_{time}=0.18, t(663) = 4.51, p <.001$, and *c
 
 We can interpret them as follows: 
 
-- with each one point increase in *time* (each measurement occasion), the expected *antisocial behavior* score goes up by 0.18, when *homecog* is kept constant, that is when comparing within children who have the same *cognitive stimulation* score;
+- with each one point increase in *time* (each measurement occasion), the expected *antisocial behavior* score goes up by 0.18, when *homecog* is kept constant;
 
-- with each one unit increase in *cognitive stimulation*, the expected *anti* score decreases by 0.13, when *time* is kept constant, that is when comparing children within the same measurement occasion. 
+- with each one unit increase in *cognitive stimulation*, the expected *anti* score at the first occasion decreases by 0.13. 
 
 For the sake of comparison, we can also check if the model is influenced by leaving *momage* out of it. As we see, the model with both *homecog* and *momage* does not fit significantly better than the model with only *homecog*, $\chi^2(1)=0.00, p > .05$. Moreover, AIC values show that model 4b is better as well, $AIC_{m4a}=3317.8, AIC_{m4b}=3315.8$. 
 
@@ -428,63 +428,104 @@ The proportion of explained variance on level-2 is .07. *Cognitive stimulation* 
 
 # 7. For the time-varying predictor(s), check if the slope is fixed or random.
 
+We will check if the slope is random for each of the time-varying predictors separately.
+Firstly, we should inspect the random slope for *time* and modify the model based on the results. Secondly, even though *reading recognition* was not a significant predictor of *antisocial behavior* when treated as fixed across children, it is possible that its slope varies across children and this variation might be non-negligible. Therefore, we will check if the slope of *read* is random as well. 
+
 ## What are the null- and alternative hypotheses?
 
-Two things we should check here, the first is that we should inspect the random slope for *time*; the second is that even though the time-varying variable *reading recognition* shows insignificant in the previous model, it can still have random slope, hence, we should take variable *read* back to the model for testing the random slope. Therefore, we will create two models to each, and there would be two null hypothesis:
+- For *time*:
 
-For *time*:
+**The null hypothesis is that *time* does not have the random slope. The alternative *time* has the random slope.** I don't think we have to add the hypotheses in words, since it's the same as in symbols
 
-The null hypothesis is that *time* does not have the random slope. The alternative *time* has the random slope. 
+$$H_0: σ^2_{u_1}=0$$
 
-$H_0: σ^2_{u_1}=0$
+$$H_1: σ^2_{u_1}>0$$
 
-$H_1: σ^2_{u_1}≠0$ 
+- For *reading recognition*:
 
-For *reading recognition*:
+**The null hypothesis is that *reading recognition* does not have the random slope. The alternative *reading recognition* has the random slope.** same here
 
-The null hypothesis is that *reading recognition* does not have the random slope. The alternative *reading recognition* has the random slope. 
+$$H_0: σ^2_{u_2}=0$$
 
-$H_0: σ^2_{u_2}=0$
-
-$H_1: σ^2_{u_2}≠0$ 
+$$H_1: σ^2_{u_2}>0$$
 
 ## Provide and interpret the relevant results.
 
 ```{r}
 # add the random slope term for the time variable
-m5 <- lmer(anti ~ 1 + time + homecog + (1 + time|id), REML=F, data=dat_long)
-summary(m5)
+m5a <- lmer(anti ~ 1 + time + homecog + (1 + time|id), REML=F, data=dat_long)
+
+summary(m5a)
+
+# compare the time random-slope model with the best fixed-slope model
+anova(m5a, m4b)
+
+# add the random slope term for the read variable
+m5b <- lmer(anti ~ 1 + time + homecog + read + (1 + time + read|id), REML=F, data=dat_long)
+
+
+summary(m5b)
 
 # compare the random-slope model with the best fixed-slope model
-anova(m5, m4b)
-
-# we should keep the random slope term
+anova(m5b, m5a)
 ```
 
+**Model 5a with random slope for time**
+
+The intercept is significant, $b_0=1.55, t(219)=16.26, p<.001$, and can be interpreted as the expected outcome at the first occasion for a child with average *homecog* score. 
+
+The coefficient for *time* is significant too, $b_{time}=0.18, t(221)=4.14, p<.001$. It shows that with each occasion, predicted Behavior Problems Index increases by 0.18 when *homecog* is kept constant. However, since we now have a varying slope for *time*, this coefficient is just the expected value across all children.
+
+Lastly, the coefficient for *homecog* is significant as well, $b_{homecog}=-0.10, t(221)=-2.79, p<.01$. With each one point increase in *cognitive stimulation*, the expected *anti* score at the first occasion goes down by 0.1.
+
+*+covariance interpretation+changes in variance components+coeff*
+
+Comparing this model with the model without the random slope, we see that the former fits the data significantly better, $χ^2(2) = 26.56$, $p<.001$, and its AIC is lower, $AIC_{m5a}=3293.3, AIC_{m4b}=3315.8$. This shows that adding the random slopes term and the covariance between the slope and the intercept improves the model.
+
+**Model 5b with random slope for time and read**
+
+The intercept and coefficients for *time* and *homecog* are still significant, with slightly different values. Their interpretation remains the same as in the previous model.
+*Read* is not a significant predictor, as expected, since its coefficient is now just the average value across all children, which has already been shown as not predictive of *antisocial behavior* in model 3. 
+
+*covariance, changes in var*
+
+We see that adding, besides the coefficient for *read*, the random slope term, covariance between slope for *time* and slope for *read*, as well as the covariance between the intercept and slope for *read* to the model, does not reduce its deviance, $χ^2(4) = 0.2609$, $p>.05$.
+
+*as seen from the plots it doesn't vary*
+
 ## Provide an overall conclusion.
+
+We can conclude that there is variation in the relation between time and *antisocial behavior* across children and we should account for it by allowing the random slope for *time*. *Read* does not have a varying slope and including it in the model, together with the other parameter, does not reduce its deviance significantly. 
+
+One thing to note here is that the hypotheses cannot be assessed directly with the test we have used. Since there are 2 additional parameters in m5a, $\sigma^2_{u1}$ and $cov(u1, uo)$, significant $\chi^2$ test does not necessarily reflect significance of $\sigma^2_{u1}$. But even if only the covariance parameter is significant, the variance of the slope is implied. Similarly, there are 4 additional parameters in m5b and ...
 
 
 # 8. If there is a random slope, set up a model that predicts the slope variation.
 
 ```{r}
-m6_mom <- lmer(anti ~ 1 + time + homecog + time*momage + time*homecog + (1 + time|id), REML=F, data=dat_long)
-
-summary(m6_mom)
-
 # add the predictor of the slope for the time variable
-m6 <- lmer(anti ~ 1 + time + homecog + time*homecog + (1 + time|id), REML=F, data=dat_long)
+m6a <- lmer(anti ~ 1 + time + homecog + time*homecog + (1 + time|id), REML=F, data=dat_long)
 
-summary(m6) # homecog is not significant anymore, but the interaction is
+summary(m6a) # homecog is not significant anymore, but the interaction is
+
 
 # compare the model with the predictor of the slope for time with the model without the predictor
-anova(m6, m5)
+anova(m6a, m5)
+
+m6b <- lmer(anti ~ 1 + time + time*momage + time*homecog + (1 + time|id), REML=F, data=dat_long)
+
+summary(m6b)
+
+anova(m6b, m6a)
 ```
 
 ## Provide and interpret the relevant results and provide your overall conclusion.
-momage not singificant
-time*momage not significant
-homecog not significant
-time*homecog 
+
+**Model 6a**
+
+**Model 6b**
+
+**Overall conclusion**
 
 # 9. Decide on a final model.
 
@@ -509,7 +550,7 @@ qqline(ranef(m6)$id[,2])
 ```
 
 
-**equations**
+# I temporarily moved the equations here
 
 ## Question 3
 
@@ -566,4 +607,22 @@ $π_{1i} = β_{10}$
 Mixed Model Equation :
 
 $Anti_{ti} = β_{00} + β_{01}momage + β_{02}homecog + β_{10}T_{ti} + u_{0i} + e_{ti}$
+
+## Question 7
+
+The equation of model_5a is:
+
+Equation of level 1:
+
+$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
+
+Equation of level 2:
+
+$π_{0i} = β_{00} + β_{02}homecog + u_{0i}$
+
+$π_{1i} = β_{10} + u_{1i}$
+
+Mixed Model Equation :
+
+$Anti_{ti} = β_{00} + β_{02}homecog + β_{10}T_{ti} + u_{0i} + u_{1i}T_{ti} + e_{ti}$
 
