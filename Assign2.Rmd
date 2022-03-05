@@ -463,10 +463,8 @@ anova(m5a, m4b)
 # add the random slope term for the read variable
 m5b <- lmer(anti ~ 1 + time + homecog + read + (1 + time + read|id), REML=F, data=dat_long)
 
-
 summary(m5b)
 
-# compare the random-slope model with the best fixed-slope model
 anova(m5b, m5a)
 ```
 
@@ -485,6 +483,7 @@ Comparing this model with the model without the random slope, we see that the fo
 **Model 5b with random slope for time and read**
 
 The intercept and coefficients for *time* and *homecog* are still significant, with slightly different values. Their interpretation remains the same as in the previous model.
+**it's not**
 *Read* is not a significant predictor, as expected, since its coefficient is now just the average value across all children, which has already been shown as not predictive of *antisocial behavior* in model 3. 
 
 *covariance, changes in var*
@@ -504,39 +503,59 @@ Similarly, there are 4 additional parameters in m5b and non-significance of $\ch
 
 # 8. If there is a random slope, set up a model that predicts the slope variation.
 
+We will inspect if each of the time invariant predictors, *momage* and *homecog*, moderates the relation between *time* and *anti*. Even though we have shown before that *mother's age* does not predict the differences in *antisocial behavior* at the first occasion across children, it is possible that it predicts the differences in the slope of *time*.
+
+Therefore, we will add the interactions between *cognitive stimulation* and *time* and between *mother's age* and *time* to the model and modify it based on the results.
+
 ```{r}
 # add the predictor of the slope for the time variable
-m6a <- lmer(anti ~ 1 + time + homecog + time*homecog + (1 + time|id), REML=F, data=dat_long)
+m6a <- lmer(anti ~ 1 + time + homecog + time*homecog + time*momage + (1 + time|id), REML=F, data=dat_long)
 
-summary(m6a) # homecog is not significant anymore, but the interaction is
+summary(m6a) # momage*time is not significant
+
+# compare the model with the two predictors of slope and the model without them
+anova(m6a, m5a)
 
 
-# compare the model with the predictor of the slope for time with the model without the predictor
-anova(m6a, m5)
-
-m6b <- lmer(anti ~ 1 + time + time*momage + time*homecog + (1 + time|id), REML=F, data=dat_long)
+# keep only homecog*time
+m6b <- lmer(anti ~ 1 + time + homecog + time*homecog + (1 + time|id), REML=F, data=dat_long)
 
 summary(m6b)
 
 anova(m6b, m6a)
+
+anova(m6b, m5a)
 ```
 
 ## Provide and interpret the relevant results and provide your overall conclusion.
 
-**Model 6a**
+**Model 6a with time X momage and time X homecog**
 
+The intercept, $b_0=1.55, t(221)=16.30, p<.001$, coefficient for *time*, $b_{time}=0.18, t(221)=4.21, p<.001$, and *time X homecog*, $b_{time \times homcog}=-0.05, t(221)=-2.69, p<.01$, are significant. As expected, *momage* is not significant, $b_{momage}=-0.02, t(221)=-0.36, p > .05$, but neither is the interaction between *time* and *momage*, $b_{time \times momage}=0.01, t(221)=0.52, p > .05$. Therefore, we will remove only this interaction from the model and interpret the coefficients for the modified model. One thing to note is that *homecog* is now not significant either, $b_{homecog}=-0.06, t(221)=-1.49, p > .05$.
 
+Comparing this model and the model without the predictors of slope for *time*, m5a, we see that the former does not fit significantly better, $\chi^2(3)=7.18, p >.05$, which is due to non-significant coefficients of *read* and *time X read*. Its AIC is, however, slightly lower, $AIC_{m5a}=3293.3, AIC_{m6a}=3292.1$
 
+**Model 6b with time X homecog**
 
-**Model 6b**
+The intercept, $b_0=1.55, t(221)=16.30, p<.001$, coefficient for *time*, $b_{time}=0.18, t(221)=4.20, p<.001$, and *time X homecog*, $b_{time \times homcog}=-0.05, t(221)=-2.64, p<.01$, are again significant. We can interpret them as:
+
+- the predicted Behavior Problems Index at the first occasion for a child with average *cognitive stimulation* score is 1.55;
+
+- with each measurement occasion, the predicted *anti* score increases by 0.18 when the *cognitive stimulation* score is average;
+
+- with each one point increase in *cognitive stimulation*, the coefficient for *time* decreases by 0.05. This means that the differences in *antisocial behavior* across different measurement occasions are smaller for children who received more *cognitive stimulation* than for children with lower score on this variable.
+
+*Cognitive stimulation* is not significant, $b_{homecog}=-0.06, t(221)=-1.49, p > .05$.
+
+We obtained a better-fitting model compared to the model without the slope predictors, 5a, $χ^2(1) = 6.88$, $p<.05$. Therefore, model_6b is our final model.
+
+**AIC values**
 
 **Overall conclusion**
 
 # 9. Decide on a final model.
 
 ## provide the separate level 1 and 2 model equations, as well as the mixed model equation.
-
-Model 6b is our final model.
 
 Equation of level 1:
 
@@ -570,6 +589,7 @@ qqnorm(ranef(m6)$id[,2], main = "Q-Q plot for the slope of time variable")
 qqline(ranef(m6)$id[,2])
 ```
 
+According to the Q-Q plots, since the distribution of the residuals in level-1 and level-2 roughly fit to the diagonal line. We confirm that the normality of both level-1 and level-2 residuals hold.
 
 # I temporarily moved the equations here
 
