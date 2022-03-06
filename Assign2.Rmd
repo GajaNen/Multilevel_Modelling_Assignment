@@ -315,7 +315,7 @@ $\sigma^2_{e}$                & 1.69                       & 1.69               
 $\sigma^2_{u0}$               & 1.59                      & 1.58                \\
 \textbf{Deviance}             & 3317.5                     & 3317.2               \\
 \textbf{AIC}                  & 3325.5                    & 3327.2               \\ 
-\textbf{Deviance difference$^{ab}$} &                            & 0.29  \\
+\textbf{Deviance difference$^{ab}$} & 20.06$^{***}$                        & 0.29  \\
 \bottomrule
 \multicolumn{3}{l}{Note}\\
 $^{***} p<.001, ^{**} p<.01$
@@ -400,6 +400,35 @@ anova(m4b, m4a)
 # compare the model with homecog and the best model with only level 1 predictors
 anova(m4b, m2)
 ```
+
+
+\begin{table}[!h]
+\centering
+\begin{threeparttable}
+\caption{Model with random slope and covariance of intercept and slope}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model}                & $M_{4a}$: homecog and momage & $M_{4b}$: homecog \\ 
+\midrule
+\textit{\textbf{Fixed part}}  & Coefficient(SE)    &  Coefficient(SE)  \\
+Intercept                     & 1.55$(.11)^{***}$  &  1.55$(.11)^{***}$        \\
+time                          & .18$(.04)^{***}$   &  .18$(.04)^{***}$        \\
+homecog                       & -0.13$(.04)^{***}$ &  -0.13$(.04)^{***}$ \\
+momage                        & .00(.05)           &                          \\
+\textit{\textbf{Random part}} &                    &    \\
+$\sigma^2_{e}$                & 1.69               & 1.69 \\
+$\sigma^2_{u0}$               & 1.49               & 1.49 \\
+\textbf{Deviance}             & 3305.8             & 3305.8 \\
+\textbf{AIC}                  & 3317.8             & 3315.8 \\
+\textbf{Deviance difference$^{a}$}  & 11.642$^{**}$ & 11.641$^{***}$ \\
+\bottomrule
+\multicolumn{3}{l}{Note}\\
+$^{***} p<.001, ^{**} p<.01$ \\
+$^a$ Here the deviance difference represents the difference compared to model 2
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
 
 ## Provide and interpret the relevant results and provide your overall conclusion
 
