@@ -613,7 +613,7 @@ anova(m6b, m5a)
 \centering
 \begin{threeparttable}
 \caption{Model with predictors for the slope of time}
-\begin{tabular}{l{0cm}cc}
+\begin{tabular}{l @{\hspace{0\tabcolsep}} cc}
 \toprule
 \textbf{Model}                & $M_{6a}$: with momage and homecog & $M_{6b}$: only homecog \\ 
 \midrule
