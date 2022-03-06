@@ -214,7 +214,7 @@ $$Anti_{ti} = β_{00} + u_{0i} + e_{ti}$$
 
 ## Provide and interpret the relevant results.
 
-```{r}
+```{r results='hide'}
 # intercept-only model
 m0 <- lm(anti ~ 1, data=dat_long)
 summary(m0)
@@ -239,7 +239,7 @@ $ρ = \frac{σ^2_{u0}}{(σ^2_e + σ^2_{u0})} = \frac{1.579}{ (1.579 + 1.741)} = 
 
 ```{r}
 ICC <- 1.579/(1.579+1.741)
-ICC
+cat(paste0("ICC = ", round(ICC, 3)))
 ```
 
 Intraclass correlation equals 0.48. We see that almost a half of the total unexplained variance represents the individual-level differences, which is quite high.
@@ -263,7 +263,7 @@ We will proceed with adding time-varying predictors in two steps:
 
 - create the model 3 by adding the fixed predictor *read*. 
 
-```{r, echo=FALSE}
+```{r results='hide'}
 # add time as a fixed level 1 predictor
 m2 <- lmer(anti ~ 1 + time + (1|id), REML=F, data=dat_long)
 summary(m2)
@@ -337,7 +337,7 @@ We also observe that the explained variance for level 1 is (very close to 0 but)
 
 There are two variables at the child level, *mother’s age* and *cognitive stimulation*.
 
-```{r, echo=FALSE}
+```{r results='hide'}
 # add momage and homecog as fixed level 2 predictors
 m4a <- lmer(anti ~ 1 + time + momage + homecog + (1|id), REML=F, data=dat_long)
 summary(m4a)
@@ -419,7 +419,7 @@ $H_1: σ^2_{u_2}>0$
 
 ## Provide and interpret the relevant results.
 
-```{r, echo=FALSE}
+```{r results='hide'}
 # add the random slope term for the time variable
 m5a <- lmer(anti ~ 1 + time + homecog + (1 + time|id), REML=F, data=dat_long)
 
@@ -471,7 +471,7 @@ We will inspect if each of the time invariant predictors, *momage* and *homecog*
 
 Therefore, we will add the interactions between *cognitive stimulation* and *time* and between *mother's age* and *time* to the model and modify it based on the results.
 
-```{r, echo=FALSE}
+```{r results='hide'}
 # add the predictor of the slope for the time variable
 m6a <- lmer(anti ~ 1 + time + homecog + time*homecog + time*momage + (1 + time|id), REML=F, data=dat_long)
 
