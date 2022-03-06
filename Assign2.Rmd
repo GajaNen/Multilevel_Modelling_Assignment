@@ -199,7 +199,7 @@ It can be seen from the *Scatterplot for mother's age and antisocial behavior* t
 There are a few outliers at the middle two occasions for *time* and *antisocial behavior* and a few in the left middle part and upper middle part in the plot for *reading recognition* and *antisocial behavior*, but none of them seems too extreme. Given the size of the sample and the overall data, we do not expect them to be very influential. 
 
 - Level 2:
-There are a few outliers in the middle upper part of the plot for *cognitive stimulation* and *antisocial behavior*. Moreover, there is are a few outliers in the left part (in the left extreme of the *read*'s scale) and in the upper middle part of the plot for *mother's age* and *antisocial behavior*. Again, we do not expect them to have much influence, given the size of the sample and the overall trends in the data. 
+There are a few outliers in the middle upper part of the plot for *cognitive stimulation* and *antisocial behavior*. Moreover, there are a few outliers in the left part (in the left extreme of the *read*'s scale) and in the upper middle part of the plot for *mother's age* and *antisocial behavior*. Again, we do not expect them to have much influence, given the size of the sample and the overall trends in the data. 
 
 # 2. Answer the question: should you perform a multilevel analysis?
 
@@ -335,9 +335,9 @@ Comparing the fixed *time* model with the random intercept-only model, we see th
 
 **Model 3 with fixed time and reading recognition**
 
-Both the intercept ($b_{0}=1.50, t(580) = 9.94, p <.001$) and the coefficient of *time* ($b_{time}=0.21, t(882) = 2.73, p < .01$) are again significant, but their values are slightly higher. The intercept now represents the Behavior Problems Index that would be expected at the first measurement occasion when the *reading recognition* score at that occasion is average. The coefficient for *time* can be interpreted as follows: with each measurement occasion, the predicted *antisocial behavior* score goes up by .21 when *reading recognition* is held constant. We see that *reading recognition skills* is not significant ($b_{read} = -0.03, t(831) = -0.54, p > .05$).
+Both the intercept ($b_{0}=1.50, t(580) = 9.94, p <.001$) and the coefficient of *time* ($b_{time}=0.21, t(882) = 2.73, p < .05$) are again significant, but their values are slightly higher. The intercept now represents the Behavior Problems Index that would be expected at the first measurement occasion when the *reading recognition* score at that occasion is average. The coefficient for *time* can be interpreted as follows: with each measurement occasion, the predicted *antisocial behavior* score goes up by .21 when *reading recognition* is held constant. We see that *reading recognition skills* is not significant ($b_{read} = -0.03, t(831) = -0.54, p > .05$).
 
-Comparing the fixed *time* model with the model with both *time* and *read*, we see that adding *read* does not improve the fit of the model, $\chi^2(1)=0.29, p > .05$. AIC values further confirm this, $AIC_{m2}=3325.5, AIC_{m3}=3327.3$. 
+Comparing the fixed *time* model with the model with both *time* and *read*, we see that adding *read* does not improve the fit of the model, $\chi^2(1)=0.29, p > .05$. AIC values further confirm this, $AIC_{m2}=3325.5, AIC_{m3}=3327.2$. 
 
 **Overall conclusion**
 
@@ -470,7 +470,7 @@ Since we have added only a level 2 predictor, which predicts the intercept (the 
 
 The formula for the explained variances of level-2 is:
 
-$R^2_{Level2} = \frac{\sigma^2_{u0(model2)} - \sigma^2_{u0(model4a)}}{\sigma^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+$R^2_{Level2} = \frac{\sigma^2_{u0(model2)} - \sigma^2_{u0(model4b)}}{\sigma^2_{u0(model2)}} = \frac{1.592 - 1.488}{1.592} = 0.07$
 
 ```{r}
 (1.592 - 1.488) / 1.592
@@ -528,26 +528,25 @@ anova(m5b, m4b)
 \textit{\textbf{Fixed part}}  & Coefficient(SE)    &  Coefficient(SE)  \\
 Intercept                     & 1.55$(.1)^{***}$  &  1.54$(.14)^{***}$        \\
 time                          & .18$(.04)^{***}$   &  .19$(.08)^{*}$        \\
-homecog                       & -0.10$(.04)^{**}$ &  -0.10$(.04)^{**}$ \\  
+homecog                       & -.10$(.04)^{**}$ &  -0.10$(.04)^{**}$ \\  
 read                          &                    & -.00(.06) \\
 \textit{\textbf{Random part}} &                    &    \\
 $\sigma^2_{e}$                & 1.52               & 1.52 \\
 $\sigma^2_{u0}$               & .95               & .92 \\
 $\sigma^2_{u1}$               & .10               & .08            \\
 $\sigma^2_{u2}$               &                & .02            \\
-$corr(u0, u1)$                &                & .51             \\
-$corr(u0, u2)$                &                & .02              \\
-$corr(u1, u2)$                &                & -.02              \\
+$\rho(u0, u1)$                &                & .51             \\
+$\rho(u0, u2)$                &                & .02              \\
+$\rho(u1, u2)$                &                & -.02              \\
 \textbf{Deviance}             & 3279.3             & 3279.0 \\
 \textbf{AIC}                  & 3293.3             & 3301.0 \\
-\textbf{Deviance difference}  & 26.561$^{***}$ & 0.26 \\
+\textbf{Deviance difference}  & 26.56$^{***}$ & .26 \\
 \bottomrule
 \multicolumn{3}{l}{Note}\\
-$^{***} p<.001, ^{**} p<.01$ \\
+$^{***} p<.001, ^{**} p<.01$ 
 \end{tabular}
 \end{threeparttable}
 \end{table}
-
 
 **Model 5a with random slope for time**
 
@@ -613,23 +612,24 @@ anova(m6b, m5a)
 \textbf{Model}                & $M_{6a}$: with momage and homecog & $M_{6b}$: only homecog \\ 
 \midrule
 \textit{\textbf{Fixed part}}  & Coefficient(SE)    &  Coefficient(SE)  \\
-Intercept                     & 1.55$(.1)^{***}$   &         \\
-time                          & .18$(.04)^{***}$   &        \\
-homecog                       & -0.06(.04)         &   \\  
+Intercept                     & 1.55$(.1)^{***}$   &  1.55$(.09)^{***}$      \\
+time                          & .18$(.04)^{***}$   &  .18$(.04)^{***}$      \\
+homecog                       & -.06(.04)          &  -.06(.04) \\  
 momage                        & -.02(.05)          &  \\
-time*homecog                  & -.05(.02)          & \\
-time*momage                   & .01(.02)           &\\
+time x homecog                & -.05$(.02)^{**}$   & -.05$(.02)^{**}$ \\
+time x momage                 & .01(.02)           & \\
 \textit{\textbf{Random part}} &                    &    \\
-$\sigma^2_{e}$                &                    &  \\
-$\sigma^2_{u0}$               &                    & \\
-$\sigma^2_{u1}$               &                    &           \\
-$corr(u0, u1)$                &                    &              \\
-\textbf{Deviance}             &                    &  \\
-\textbf{AIC}                  &                    & \\
-\textbf{Deviance difference}  &                    &  \\
+$\sigma^2_{e}$                & 1.53               & 1.53 \\
+$\sigma^2_{u0}$               & .94                & .94 \\
+$\sigma^2_{u1}$               & .08                & .08          \\
+$corr(u0, u1)$                & .48                & .47             \\
+\textbf{Deviance}             & 3272.1             & 3272.4\\
+\textbf{AIC}                  & 3292.1             & 3288.4 \\
+\textbf{Deviance difference$^{a}$}  & 7.18         & 6.88$^{**}$\\
 \bottomrule
 \multicolumn{3}{l}{Note}\\
 $^{***} p<.001, ^{**} p<.01$ \\
+$^{a}$ The difference in deviance is calculated in comparison to model 5a.
 \end{tabular}
 \end{threeparttable}
 \end{table}
