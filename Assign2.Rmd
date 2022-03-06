@@ -414,7 +414,7 @@ anova(m4b, m2)
 \centering
 \begin{threeparttable}
 \caption{Model with both level 2 predictors and with only one}
-\begin{tabular}{lcc}
+\begin{tabular}{l @{\hspace{0\tabcolsep}} cc}
 \toprule
 \textbf{Model}                & $M_{4a}$: homecog and momage & $M_{4b}$: homecog \\ 
 \midrule
@@ -613,7 +613,7 @@ anova(m6b, m5a)
 \centering
 \begin{threeparttable}
 \caption{Model with predictors for the slope of time}
-\begin{tabular}{lcc}
+\begin{tabular}{l @{\hspace{0\tabcolsep}} cc}
 \toprule
 \textbf{Model}                & $M_{6a}$: with momage and homecog & $M_{6b}$: only homecog \\ 
 \midrule
