@@ -405,7 +405,7 @@ anova(m4b, m2)
 \begin{table}[!h]
 \centering
 \begin{threeparttable}
-\caption{Model with random slope and covariance of intercept and slope}
+\caption{Model with both level 2 predictors and with only one}
 \begin{tabular}{lcc}
 \toprule
 \textbf{Model}                & $M_{4a}$: homecog and momage & $M_{4b}$: homecog \\ 
@@ -509,7 +509,43 @@ summary(m5b)
 
 # compare the model with two random slopes and the model with only one
 anova(m5b, m5a)
+
+# compare the model with one random slope with the best model without it
+anova(m5b, m4b)
 ```
+
+
+\begin{table}[!h]
+\centering
+\begin{threeparttable}
+\caption{Models with random slopes}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model}                & $M_{5a}$: random slope for time & $M_{5b}$: random slope for read and time \\ 
+\midrule
+\textit{\textbf{Fixed part}}  & Coefficient(SE)    &  Coefficient(SE)  \\
+Intercept                     & 1.55$(.1)^{***}$  &  1.54$(.14)^{***}$        \\
+time                          & .18$(.04)^{***}$   &  .19$(.08)^{*}$        \\
+homecog                       & -0.10$(.04)^{**}$ &  -0.10$(.04)^{**}$ \\  
+read                          &                    & -.00(.06) \\
+\textit{\textbf{Random part}} &                    &    \\
+$\sigma^2_{e}$                & 1.52               & 1.52 \\
+$\sigma^2_{u0}$               & .95               & .92 \\
+$\sigma^2_{u1}$               & .10               & .08            \\
+$\sigma^2_{u2}$               &                & .02            \\
+$corr(u0, u1)$                &                & .51             \\
+$corr(u0, u2)$                &                & .02              \\
+$corr(u1, u2)$                &                & -.02              \\
+\textbf{Deviance}             & 3279.3             & 3279.0 \\
+\textbf{AIC}                  & 3293.3             & 3301.0 \\
+\textbf{Deviance difference}  & 26.561$^{***}$ & 0.26 \\
+\bottomrule
+\multicolumn{3}{l}{Note}\\
+$^{***} p<.001, ^{**} p<.01$ \\
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
 
 **Model 5a with random slope for time**
 
@@ -565,6 +601,36 @@ anova(m6b, m6a)
 # compare the model with homecog with the model without predictors for slope
 anova(m6b, m5a)
 ```
+
+\begin{table}[!h]
+\centering
+\begin{threeparttable}
+\caption{Model with predictors for the slope of time}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model}                & $M_{6a}$: with momage and homecog & $M_{6b}$: only homecog \\ 
+\midrule
+\textit{\textbf{Fixed part}}  & Coefficient(SE)    &  Coefficient(SE)  \\
+Intercept                     & 1.55$(.1)^{***}$   &         \\
+time                          & .18$(.04)^{***}$   &        \\
+homecog                       & -0.06(.04)         &   \\  
+momage                        & -.02(.05)          &  \\
+time*homecog                  & -.05(.02)          & \\
+time*momage                   & .01(.02)           &\\
+\textit{\textbf{Random part}} &                    &    \\
+$\sigma^2_{e}$                &                    &  \\
+$\sigma^2_{u0}$               &                    & \\
+$\sigma^2_{u1}$               &                    &           \\
+$corr(u0, u1)$                &                    &              \\
+\textbf{Deviance}             &                    &  \\
+\textbf{AIC}                  &                    & \\
+\textbf{Deviance difference}  &                    &  \\
+\bottomrule
+\multicolumn{3}{l}{Note}\\
+$^{***} p<.001, ^{**} p<.01$ \\
+\end{tabular}
+\end{threeparttable}
+\end{table}
 
 ## Provide and interpret the relevant results and provide your overall conclusion.
 
