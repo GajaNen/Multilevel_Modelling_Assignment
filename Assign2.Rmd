@@ -2,9 +2,10 @@
 title: Assignment 2
 author: Clara Baudry & Gaja Nenadović & Hsuan Lee
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output:
+output: 
   pdf_document:
-    latex_engine: xelatex
+    includes:
+      in_header: header.tex
 geometry: margin=0.7in
 ---
 
@@ -14,6 +15,8 @@ library(dplyr)
 library(knitr)
 library(tidyverse)
 library(ggplot2)
+library(pander)
+library(psych)
 library(lme4)
 library(lmerTest)
 library(ggpubr)
@@ -32,7 +35,7 @@ dat_long <- pivot_longer(data=dat[,-c(10, 13)],
                          names_pattern = "(anti|read)(.)") %>% mutate_at(vars(time), as.integer)
 
 # summary statistics
-kable(summary(dat_long[,-1]))
+pander(describe(dat_long[,-1]), caption="Descriptive statistics")
 ```
 
 We see that the *time* variable ranges from 1 to 4, which means that the first occasion is coded as 1. This means that the intercept cannot be interpreted meaningfully (the time variable will never be equal to 0). Therefore, we will recode the time variable and set its range from 0 to 3, so that the intercept is the predicted outcome for the first occasion when all other predictors are equal to 0. Looking at the ranges of the other predictors, we see that 0 is not a plausible value for any of them. This again means that the intercept will not be meaningful and we will have to extrapolate to interpret it. We will center the three predictors (*momage*, *read*, *homecog*), so that the intercept can be interpreted as the predicted outcome at the first occasion for a person with average values on all the other predictors.
@@ -45,7 +48,7 @@ dat_long$time <- dat_long$time - 1
 dat_long[,-c(1, 4, 5)] <- scale(dat_long[,-c(1, 4, 5)], scale=F)
 
 # check summary statistics again
-kable(summary(dat_long[,-1]))
+pander(describe(dat_long[,-1]), caption="Descriptive statistics")
 ```
 
 As we see from the table, 0 is now a plausible (and meaningful) value for every predictor.
@@ -192,11 +195,9 @@ It can be seen from *Figure * that the linear and quadratic trend lines for the 
 ## Check for outliers, report.
 
 - Level 1:
-
 There are a few outliers at the middle two occasions for *time* and *antisocial behavior* and a few in the left middle part and upper middle part in the plot for *reading recognition* and *antisocial behavior*, but none of them seems too extreme. Given the size of the sample and the overall data, we do not expect them to be very influential. 
 
 - Level 2:
-
 There are a few outliers in the middle upper part of the plot for *cognitive stimulation* and *antisocial behavior*. Moreover, there is are a few outliers in the left part (in the left extreme of the *read*'s scale) and in the upper middle part of the plot for *mother's age* and *antisocial behavior*. Again, we do not expect them to have much influence, given the size of the sample and the overall trends in the data. 
 
 # 2. Answer the question: should you perform a multilevel analysis?
@@ -204,13 +205,13 @@ There are a few outliers in the middle upper part of the plot for *cognitive sti
 ## What is the mixed model equation?
 
 - Level-1 equation:
-$$Anti_{ti} = π_{0i} + e_{ti}$$
+$$Anti_{ti} = \pi_{0i} + e_{ti}$$
 
 - Level-2 equation:
-$$π_{0i} = β_{00} + u_{0i}$$
+$$\pi_{0i} = \beta_{00} + u_{0i}$$
 
 - Mixed Model Equation :
-$$Anti_{ti} = β_{00} + u_{0i} + e_{ti}$$
+$$Anti_{ti} = \beta_{00} + u_{0i} + e_{ti}$$
 
 ## Provide and interpret the relevant results.
 
@@ -229,13 +230,35 @@ summary(m1)
 anova(m1, m0)
 ```
 
-Model 1 fits significantly better than model 0, $χ^2(1) = 231.97$, $p<.001$. This points to the significant differences in the intercept (average *Behavior Problems Index*) between children ($\sigma_{u0}^2 > 0$).
+\begin{table}[!h]
+\centering
+\begin{threeparttable}
+\caption{Single-level model and Intercept-only model}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model}                & $M_{0}$: single-level model & $M_{1}$: intercept only \\ \midrule
+\textit{\textbf{Fixed part}}  & Coefficient(SE)             & Coefficient(SE)          \\
+Intercept ($\gamma_{00}$)     & 1.82(.06)                  & 1.82(.10)              \\
+\textit{\textbf{Random part}} &                             &                         \\
+$\sigma^2_{e}$                & 3.32                        & 1.74       \\
+$\sigma^2_{u0}$               &                             & 1.58                    \\
+\textbf{Deviance}             & 3569.5                     & 3337.5                 \\
+\textbf{AIC}                  & 3573.5                     & 3343.5                 \\
+\textbf{Deviance difference}  &                             & 231.97$^{***}$                \\
+\bottomrule
+\multicolumn{3}{l}{Note}\\
+$^{***} p<.001, ^{**} p<.01$
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
+Model 1 fits significantly better than model 0, $\chi^2(1) = 231.97$, $p<.001$. This points to the significant differences in the intercept (average *Behavior Problems Index*) between children ($\sigma_{u0}^2 > 0$).
 
 ## What is the intraclass correlation?
 
 The formula for ICC is:
 
-$ρ = \frac{σ^2_{u0}}{(σ^2_e + σ^2_{u0})} = \frac{1.579}{ (1.579 + 1.741)} = 0.48$.
+$\rho = \frac{\sigma^2_{u0}}{(\sigma^2_e + \sigma^2_{u0})} = \frac{1.579}{ (1.579 + 1.741)} = 0.48$.
 
 ```{r}
 ICC <- 1.579/(1.579+1.741)
@@ -249,7 +272,6 @@ Intraclass correlation equals 0.48. We see that almost a half of the total unexp
 We have shown that the data has a multilevel structure:
 
 - $\sigma_{u0}^2 > 0$, $ICC=.48$: a large part of variation in the outcome is on the child-level and accounting for this variation in the *antisocial behavior* across children by adding the random intercept term significantly improves the fit of the model;
-
 - the observations are not independent: the correlation between Behavior Problems Index on two occasions for the same child is considerably large, 0.48. 
 
 Therefore, we should account for this dependence and variation by adopting the multilevel analysis.
@@ -258,9 +280,7 @@ Therefore, we should account for this dependence and variation by adopting the m
 # 3. Add the time-varying predictor(s).
 
 We will proceed with adding time-varying predictors in two steps:
-
 - create the model 2 with the fixed predictor *time*. This model will be used in further analyses as a benchmark to calculate $R^2$ on level 1 and level 2;
-
 - create the model 3 by adding the fixed predictor *read*. 
 
 ```{r results='hide'}
@@ -278,6 +298,31 @@ summary(m3)
 # compare the model with both level 1 predictors with the model with just time
 anova(m3, m2)
 ```
+
+\begin{table}[!h]
+\centering
+\begin{threeparttable}
+\caption{Model with time and with time and read}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model}                & $M_{2}$: model with time & $M_{3}$: model with read and time \\ \midrule
+\textit{\textbf{Fixed part}}  & Coefficient(SE)            & Coefficient(SE)      \\
+Intercept ($\gamma_{00}$)     & 1.55$(.11) ^{***}$                & 1.50$(.15)^{***}$             \\
+Time                          & 0.18$(.04)^{***}$          & 0.21$(.08)^{**}$     \\
+Reading recognition            &                           & -0.03(.06)          \\
+\textit{\textbf{Random part}} &                            &                      \\
+$\sigma^2_{e}$                & 1.69                       & 1.69                 \\
+$\sigma^2_{u0}$               & 1.59                      & 1.58                \\
+\textbf{Deviance}             & 3317.5                     & 3317.2               \\
+\textbf{AIC}                  & 3325.5                    & 3327.2               \\ 
+\textbf{Deviance difference$^{ab}$} &                            & 0.29  \\
+\bottomrule
+\multicolumn{3}{l}{Note}\\
+$^{***} p<.001, ^{**} p<.01$
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
 
 ## Provide and interpret the relevant results and provide your overall conclusion.
 
@@ -303,7 +348,7 @@ The better of these two models is the one with only *time*, model 2.
 
 Its equation is:
 
-$Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
+$Anti_{ti} = \beta_{00} + \beta_{10} T_{ti} + u_{0i} + e_{ti}$
 
 
 # 4. On which level or levels can you expect explained variance?
@@ -316,7 +361,7 @@ However, the only predictor that we added to the baseline model, that is *readin
 
 The formula for the explained variance on level-1 is:
 
-$R^2_{Level1} = \frac{σ^2_{e(model2)} - σ^2_{e(model3)}}{σ^2_{e(model2)}} = \frac{1.689 - 1.693}{1.689} = 0.00$
+$R^2_{Level1} = \frac{\sigma^2_{e(model2)} - \sigma^2_{e(model3)}}{\sigma^2_{e(model2)}} = \frac{1.689 - 1.693}{1.689} = 0.00$
 
 ```{r}
 (1.689 - 1.693) / 1.689
@@ -324,7 +369,7 @@ $R^2_{Level1} = \frac{σ^2_{e(model2)} - σ^2_{e(model3)}}{σ^2_{e(model2)}} = \
 
 The formula for the explained variance on level-2 is:
 
-$R^2_{Level2} = \frac{σ^2_{u0(model2)} - σ^2_{u0(model3)}}{σ^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+$R^2_{Level2} = \frac{\sigma^2_{u0(model2)} - \sigma^2_{u0(model3)}}{\sigma^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
 
 ```{r}
 (1.592 - 1.576) / 1.592
@@ -394,7 +439,7 @@ Since we have added only a level 2 predictor, which predicts the intercept (the 
 
 The formula for the explained variances of level-2 is:
 
-$R^2_{Level2} = \frac{σ^2_{u0(model2)} - σ^2_{u0(model4a)}}{σ^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+$R^2_{Level2} = \frac{\sigma^2_{u0(model2)} - \sigma^2_{u0(model4a)}}{\sigma^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
 
 ```{r}
 (1.592 - 1.488) / 1.592
@@ -410,12 +455,12 @@ Firstly, we should inspect the random slope for *time* and modify the model base
 ## What are the null- and alternative hypotheses?
 
 - For *time*:
-$H_0: σ^2_{u_1}=0$
-$H_1: σ^2_{u_1}>0$
+$H_0: \sigma^2_{u_1}=0$
+$H_1: \sigma^2_{u_1}>0$
 
 - For *reading recognition*:
-$H_0: σ^2_{u_2}=0$
-$H_1: σ^2_{u_2}>0$
+$H_0: \sigma^2_{u_2}=0$
+$H_1: \sigma^2_{u_2}>0$
 
 ## Provide and interpret the relevant results.
 
@@ -447,13 +492,13 @@ Lastly, the coefficient for *homecog* is significant as well, $b_{homecog}=-0.10
 
 Correlation between the intercepts and slopes for *time* is 0.41. It shows that children who have a higher Behavior Problems Index at the first occasion also have a higher rate of increase in this index over time. 
 
-Comparing this model with the model without the random slope, we see that the former fits the data significantly better, $χ^2(2) = 26.56$, $p<.001$, and its AIC is lower, $AIC_{m5a}=3293.3, AIC_{m4b}=3315.8$. This shows that adding the random slope term and the covariance between the slope and the intercept improves the model.
+Comparing this model with the model without the random slope, we see that the former fits the data significantly better, $\chi^2(2) = 26.56$, $p<.001$, and its AIC is lower, $AIC_{m5a}=3293.3, AIC_{m4b}=3315.8$. This shows that adding the random slope term and the covariance between the slope and the intercept improves the model.
 
 **Model 5b with random slope for time and read**
 
 The intercept and coefficients for *time* and *homecog* are still significant, with slightly different values. *Read* is not significant, as expected, since its coefficient is now just the average value across all children, and it has already been shown as not predictive of *antisocial behavior* in model 3.
 
-We see that adding, besides the coefficient for *read*, the random slope term, covariance between slope for *time* and slope for *read*, as well as the covariance between the intercept and slope for *read* to the model, does not reduce its deviance, $χ^2(4) = 0.2609$, $p>.05$.
+We see that adding, besides the coefficient for *read*, the random slope term, covariance between slope for *time* and slope for *read*, as well as the covariance between the intercept and slope for *read* to the model, does not reduce its deviance, $\chi^2(4) = 0.2609$, $p>.05$.
 
 Therefore, model 5a is preferred and coefficients for model 5b will not be interpreted. 
 
@@ -520,9 +565,9 @@ Correlation between the slopes of *time* and intercepts is 0.48, slightly lower 
 
 *Cognitive stimulation* explains 13% of variance in slopes of *time* (that is, rates of change in the outcome over time), $R^2=0.13$. 
 
-Comparing this model with the model with both interactions (m6a), we see that the latter does not fit the data better $χ^2(2) = 0.3$, $p>.05$. This is further confirmed by AIC values, $AIC_{m6b}=3288.4$, than of the model with both interactions, $AIC_{m6a}=3292.1$. 
+Comparing this model with the model with both interactions (m6a), we see that the latter does not fit the data better $\chi^2(2) = 0.3$, $p>.05$. This is further confirmed by AIC values, $AIC_{m6b}=3288.4$, than of the model with both interactions, $AIC_{m6a}=3292.1$. 
 
-Furthermore, we obtained a better-fitting model compared to the model without the slope predictors, m5a, $χ^2(1) = 6.88$, $p<.05$.
+Furthermore, we obtained a better-fitting model compared to the model without the slope predictors, m5a, $\chi^2(1) = 6.88$, $p<.05$.
 
 **Overall conclusion**
 
@@ -537,17 +582,17 @@ Therefore, model 6b is our final model.
 
 Equation of level 1:
 
-$$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$$
+$$Anti_{ti} = \pi_{0i} + \pi_{1i}T_{ti} + e_{ti}$$
 
 Equation of level 2:
 
-$$π_{0i} = β_{00} + β_{01}homecog + u_{0i}$$
+$$\pi_{0i} = \beta_{00} + \beta_{01}homecog + u_{0i}$$
 
-$$π_{1i} = β_{10} + β_{11}homecog + u_{1i}$$
+$$\pi_{1i} = \beta_{10} + \beta_{11}homecog + u_{1i}$$
 
 Mixed Model Equation :
 
-$$Anti_{ti} = β_{00} + β_{01}homecog + β_{10}T_{ti} + β_{11}homecog*time + u_{0i} + u_{1i}T_{ti} + e_{ti}$$
+$$Anti_{ti} = \beta_{00} + \beta_{01}homecog + \beta_{10}T_{ti} + \beta_{11}homecog*time + u_{0i} + u_{1i}T_{ti} + e_{ti}$$
 
 ## Check the normality assumption for both the level-1 and level-2 errors, report.
 
@@ -571,78 +616,4 @@ qqline(ranef(m6b)$id[,2])
 - The residuals for the intercept and slope of *time* also include some outliers on each of the extremes and the middle part of the plot does not follow the line as well as the residuals on the first level. But we can conclude that the deviations are not too extreme and they are approximately normally distributed.
 
 # I temporarily moved the equations here
-
-## Question 3
-
-The equation for model_2 and model_3 are:
-
-model_2 (baseline model):
-
-Equation of level 1:
-
-$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
-
-Equation of level 2:
-
-$π_{0i} = β_{00} + u_{0i}$
-
-$π_{1i} = β_{10}$
-
-Mixed Model Equation :
-
-$Anti_{ti} = β_{00} + β_{10} T_{ti} + u_{0i} + e_{ti}$
-
-model_3 (time-varying predictors):
-
-Equation of level 1:
-
-$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + π_{2i}X_{ti} + e_{ti}$
-
-Equation of level 2:
-
-$π_{0i} = β_{00} + u_{0i}$
-
-$π_{1i} = β_{10}$
-
-$π_{2i} = β_{20}$
-
-Mixed Model Equation :
-
-$Anti_{ti} = β_{00} + β_{10}T_{ti} + β_{20}X_{ti} + u_{0i} + e_{ti}$
-
-## Question 5
-
-The equation to model_4 is:
-
-Equation of level 1:
-
-$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
-
-Equation of level 2:
-
-$π_{0i} = β_{00} + β_{01}momage + β_{02}homecog + u_{0i}$
-
-$π_{1i} = β_{10}$
-
-Mixed Model Equation :
-
-$Anti_{ti} = β_{00} + β_{01}momage + β_{02}homecog + β_{10}T_{ti} + u_{0i} + e_{ti}$
-
-## Question 7
-
-The equation of model_5a is:
-
-Equation of level 1:
-
-$Anti_{ti} = π_{0i} + π_{1i}T_{ti} + e_{ti}$
-
-Equation of level 2:
-
-$π_{0i} = β_{00} + β_{02}homecog + u_{0i}$
-
-$π_{1i} = β_{10} + u_{1i}$
-
-Mixed Model Equation :
-
-$Anti_{ti} = β_{00} + β_{02}homecog + β_{10}T_{ti} + u_{0i} + u_{1i}T_{ti} + e_{ti}$
 
