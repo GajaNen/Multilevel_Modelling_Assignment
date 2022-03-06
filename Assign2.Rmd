@@ -8,7 +8,7 @@ output:
 geometry: margin=0.7in
 ---
 
-```{r}
+```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(knitr)
@@ -16,11 +16,13 @@ library(tidyverse)
 library(ggplot2)
 library(lme4)
 library(lmerTest)
+library(ggpubr)
+library(gridExtra)
 ```
 
 # 1. Convert the wide data file into a long format. Check the data and recode if necessary.
 
-```{r}
+```{r, echo=FALSE}
 dat <- read.csv("curran_wide.csv")
 
 # transform to long format, excluding sex and homeemo variables, and change time to int
@@ -35,7 +37,7 @@ kable(summary(dat_long[,-1]))
 
 We see that the *time* variable ranges from 1 to 4, which means that the first occasion is coded as 1. This means that the intercept cannot be interpreted meaningfully (the time variable will never be equal to 0). Therefore, we will recode the time variable and set its range from 0 to 3, so that the intercept is the predicted outcome for the first occasion when all other predictors are equal to 0. Looking at the ranges of the other predictors, we see that 0 is not a plausible value for any of them. This again means that the intercept will not be meaningful and we will have to extrapolate to interpret it. We will center the three predictors (*momage*, *read*, *homecog*), so that the intercept can be interpreted as the predicted outcome at the first occasion for a person with average values on all the other predictors.
 
-```{r}
+```{r, echo=FALSE}
 # rescale the time variable
 dat_long$time <- dat_long$time - 1
 
@@ -52,9 +54,9 @@ As we see from the table, 0 is now a plausible (and meaningful) value for every 
 
 We will check if:
 1) there is a linear relationship between each of the first level predictors and the outcome, that is between *time* and *antisocial behavior* (outcome variable) and *read* and *antisocial behavior*;
-2) there is a linear relationship between the level-2 predictors and the aggregated outcome, that is between *antisocial behavior* and *cognitive stimulation* and *antisocial behavior* and *mother’s age*.
+2) there is a linear relationship between the level-2 predictors and the aggregated outcome, that is between *cognitive stimulation*, *antisocial behavior*, *mother’s age* and *antisocial behavior*.
 
-```{r}
+```{r, message=FALSE, echo=FALSE, fig.width=3.7, fig.cap = "Scatterplots for the first level"}
 # a scatterplot with a linear and quadratic trend for each of the time-varying predictors and the outcome
 
 ggplot(dat_long,
@@ -84,9 +86,14 @@ ggplot(dat_long,
        theme_minimal() +
        xlab("Reading recognition score") +
        ylab("Behaviour Problems Index")
+```
+The plot of the relation between *time* and *antisocial behavior* reveals that the quadratic trend line is practically the same as the linear trend line. It shows that the explained variance is almost the same for these two trends and the relation appears to be approximately linear.
+
+As we can see from the *Figure 2*, the linear and quadratic lines for the relation between the *reading recognition skills* and *antisocial behavior* are now slightly different. The quadratic trend seems to fit somewhat better (and explain more variance in the outcome) than the linear one, albeit to a rather small degree. The slope of the linear trend line seems to be close to 0, indicating that there is no linear relation between these two variables. There appears to be neither linear nor quadratic relation between the two variables, but we will include *read* in the analysis to further evaluate this.
 
 
-# the plot anti~time seprately for different persons
+```{r, message=FALSE, echo=FALSE, fig.width=3.5, fig.height=8, fig.cap = "Scatterplots for the first level by individuals", fig.topcaption=TRUE}
+# the plot anti~time separately for different persons
 ggplot(data=dat_long[which(dat_long$id <= 900),], aes(x=time,y=anti)) +
   geom_point() +
   stat_smooth(method="lm", fullrange=TRUE) +
@@ -110,7 +117,7 @@ ggplot(data=dat_long[which(dat_long$id > 900 & dat_long$id <= 2000),], aes(x=tim
 ggplot(data=dat_long[which(dat_long$id <= 900),], aes(x=read,y=anti)) +
   geom_point() +
   stat_smooth(method="lm", fullrange=TRUE) +
-  xlab("Time point") + ylab("Behaviour Problems Index") + 
+  xlab("Reading recognition") + ylab("Behaviour Problems Index") + 
   facet_wrap( ~ id) +
   theme(axis.title=element_text(size=16),
         axis.text=element_text(size=14),
@@ -120,7 +127,7 @@ ggplot(data=dat_long[which(dat_long$id <= 900),], aes(x=read,y=anti)) +
 ggplot(data=dat_long[which(dat_long$id > 900 & dat_long$id <= 2000),], aes(x=read,y=anti)) +
   geom_point() +
   stat_smooth(method="lm", fullrange=TRUE) +
-  xlab("Time point") + ylab("Behaviour Problems Index") + 
+  xlab("Reading recognition") + ylab("Behaviour Problems Index") + 
   facet_wrap( ~ id) +
   theme(axis.title=element_text(size=16),
         axis.text=element_text(size=14),
@@ -135,17 +142,11 @@ ggplot(data=dat_long[which(dat_long$id > 900 & dat_long$id <= 2000),], aes(x=rea
 ### WORK ON THIS!
 ```
 
-The plot of the relation between *time* and *antisocial behavior* reveals that the quadratic trend line is practically the same as the linear trend line. It shows that the explained variance is almost the same for these two trends and the relation appears to be approximately linear.
-
-As we can see from the *Figure 2*, the linear and quadratic lines for the relation between the *reading recognition skills* and *antisocial behavior* are now slightly different. The quadratic trend seems to fit somewhat better (and explain more variance in the outcome) than the linear one, albeit to a rather small degree. The slope of the linear trend line seems to be close to 0, indicating that there is no linear relation between these two variables. There appears to be neither linear nor quadratic relation between the two variables, but we will include *read* in the analysis to further evaluate this.
-
 *Figures * show the relations between the first level predictors and the outcome for a subset of children. The relation between *time* and *antisocial behavior* slightly varies between the children. The relation between *reading recognition skills* and *antisocial behavior* is quite similar for different children in this subset and the slopes seem to be close to 0. 
 
-```{r}
-# a scatterplot for each of the time invariant predictors and the aggregated outcome:
-
+```{r, message=FALSE, echo=FALSE, fig.align='center', fig.cap = "Scatterplot for cognitive stimulation and antisocial behavior", fig.topcaption=TRUE}
 # antisocial behavior with cognitive stimulation
-p2 <- dat_long %>% 
+dat_long %>% 
   group_by(id) %>% 
   mutate(antiAGR = mean(anti)) %>% 
   ggplot(aes(x = homecog, y = antiAGR)) +
@@ -154,22 +155,21 @@ p2 <- dat_long %>%
               aes(color = "linear"),
               se = FALSE) +
   geom_smooth(method = "lm",
-              formula = y ~ x + I(x^2),
+              formula = y ~ x + I(x**2),
               aes(color = "quadratic"),
               se = FALSE) +
   theme_minimal()+
   xlab("cognitive stimulation") +
   ylab("aggregted Behavior Problems Index")+
-  ggtitle("Relation between cognitive stimulation and aggregted Behavior Problems Index")+
   theme(plot.title = element_text(size = 10, hjust=0.5))
-p2
 ```
 
 *Figure * reveals that both linear and quadratic trend lines for the relationship between *cognitive stimulation* and *antisocial behavior* are again similar to each other; adding the quadratic trend to the model would not add additional information in predicting the outcome. We conclude that the relation seems to be approximately linear. 
 
-```{r}
+
+```{r, message=FALSE, echo=FALSE, fig.align='center',fig.cap = "Scatterplot for mother's age and antisocial behavior", fig.topcaption=TRUE}
 # antisocial behavior with mother’s age.
-p3 <- dat_long %>% 
+dat_long %>% 
   group_by(id) %>% 
   mutate(antiAGR = mean(anti)) %>% 
   ggplot(aes(x = momage, y = antiAGR)) +
@@ -178,13 +178,12 @@ p3 <- dat_long %>%
               aes(color = "linear"),
               se = FALSE) +
   geom_smooth(method = "lm",
-              formula = y ~ x + I(x^2),
+              formula = y ~ x + I(x**2),
               aes(color = "quadratic"),
               se = FALSE) +
   theme_minimal()+
   xlab("Mother's age") +
   ylab("aggregted Behaviors Problems Index")+
-  ggtitle("Relation between mother's age and aggregted Behaviors Problems Index")+
   theme(plot.title = element_text(size = 10, hjust=0.5))
 ```
 
@@ -264,7 +263,7 @@ We will proceed with adding time-varying predictors in two steps:
 
 - create the model 3 by adding the fixed predictor *read*. 
 
-```{r}
+```{r, echo=FALSE}
 # add time as a fixed level 1 predictor
 m2 <- lmer(anti ~ 1 + time + (1|id), REML=F, data=dat_long)
 summary(m2)
@@ -338,7 +337,7 @@ We also observe that the explained variance for level 1 is (very close to 0 but)
 
 There are two variables at the child level, *mother’s age* and *cognitive stimulation*.
 
-```{r}
+```{r, echo=FALSE}
 # add momage and homecog as fixed level 2 predictors
 m4a <- lmer(anti ~ 1 + time + momage + homecog + (1|id), REML=F, data=dat_long)
 summary(m4a)
@@ -420,7 +419,7 @@ $H_1: σ^2_{u_2}>0$
 
 ## Provide and interpret the relevant results.
 
-```{r}
+```{r, echo=FALSE}
 # add the random slope term for the time variable
 m5a <- lmer(anti ~ 1 + time + homecog + (1 + time|id), REML=F, data=dat_long)
 
@@ -472,7 +471,7 @@ We will inspect if each of the time invariant predictors, *momage* and *homecog*
 
 Therefore, we will add the interactions between *cognitive stimulation* and *time* and between *mother's age* and *time* to the model and modify it based on the results.
 
-```{r}
+```{r, echo=FALSE}
 # add the predictor of the slope for the time variable
 m6a <- lmer(anti ~ 1 + time + homecog + time*homecog + time*momage + (1 + time|id), REML=F, data=dat_long)
 
@@ -527,7 +526,8 @@ Furthermore, we obtained a better-fitting model compared to the model without th
 
 **Overall conclusion**
 
-We conclude that adding the cross-level interaction between *cognitive stimulation* and *time* improves the model. *Cognitive stimulation* can explain a part of the variation in the trends in *antisocial behavior* over time across children. Adding *mother's age* as a predictor of slope for *time* does not improve the model and this variable does not moderate the relation between *time* and *antisocial behavior*. 
+We conclude that adding the cross-level interaction between *cognitive stimulation* and *time* improves the model. *Cognitive stimulation* can explain a part of the variation in the trends in *antisocial behavior* over time across children, but when we account for this, it does not predict the differences across children at the first occasion. 
+Adding *mother's age* as a predictor of slope for *time* does not improve the model and this variable does not moderate the relation between *time* and *antisocial behavior* nor does it explain the differences in *antisocial behavior* at the first occasion. 
 
 Therefore, model 6b is our final model.
 
@@ -551,7 +551,7 @@ $$Anti_{ti} = β_{00} + β_{01}homecog + β_{10}T_{ti} + β_{11}homecog*time + u
 
 ## Check the normality assumption for both the level-1 and level-2 errors, report.
 
-```{r}
+```{r, r, message=FALSE, echo=FALSE, fig.width=3.7}
 # level 1:
 qqnorm(residuals(m6b), main = "Q-Q plot for the first level residuals")
 qqline(residuals(m6b))
@@ -563,12 +563,12 @@ qqnorm(ranef(m6b)$id[,1], main = "Q-Q plot for the intercept")
 qqline(ranef(m6b)$id[,1])
 
 # slope
-qqnorm(ranef(m6b)$id[,2], main = "Q-Q plot for the slope of time variable")
+qqnorm(ranef(m6b)$id[,2], main = "Q-Q plot for the slope of time")
 qqline(ranef(m6b)$id[,2])
 ```
 
-- First level residuals are approximately normally distributed with some outliers and minor deviations on left bottom and upper right corner of the plot.
-- The residuals for the intercept and slope of *time* also have some outliers on each side and the middle part of the plot does not follow the line as well as the residuals on the first level. But we can conclude that the deviations are not too extreme and they are approximately normally distributed.
+- First level residuals are approximately normally distributed with some outliers and minor deviations at the left bottom and upper right corner of the plot.
+- The residuals for the intercept and slope of *time* also include some outliers on each of the extremes and the middle part of the plot does not follow the line as well as the residuals on the first level. But we can conclude that the deviations are not too extreme and they are approximately normally distributed.
 
 # I temporarily moved the equations here
 
