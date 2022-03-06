@@ -98,8 +98,7 @@ The plot of the relationship between *time* and *antisocial behavior* reveals th
 
 As we can see from the *Plot between Reading recognition score and Behaviour Problems Index*, the linear and quadratic lines for the relationship between the *reading recognition skills* and *antisocial behavior* are now slightly different. The quadratic trend seems to fit somewhat better (and explain more variance in the outcome) than the linear one, albeit to a rather small degree. The slope of the linear trend line seems to be close to 0, indicating that there is no linear relationship between these two variables. There appears to be neither linear nor quadratic relationship between the two variables, but we will include *read* in the analysis to further evaluate this.
 
-
-```{r, message=FALSE, echo=FALSE, fig.width=3.5, fig.height=8, fig.cap = "Scatterplots for the first level by individuals", fig.topcaption=TRUE}
+```{r, message=FALSE, echo=FALSE, fig.width=3.5, fig.height=8}
 # the plot anti~time separately for different persons
 ggplot(data=dat_long[which(dat_long$id <= 900),], aes(x=time,y=anti)) +
   geom_point() +
@@ -146,9 +145,11 @@ ggplot(data=dat_long[which(dat_long$id > 900 & dat_long$id <= 2000),], aes(x=rea
 
 ```
 
-*Figures* show the relationships between the first level predictors and the outcome for a subset of children. The relationship between *time* and *antisocial behavior* slightly varies between the children. The relationship between *reading recognition skills* and *antisocial behavior* is quite similar for different children in this subset and the slopes seem to be close to 0. 
+The plots for a subset of children show the relationships between the first level predictors and the outcome for each child separately (indicated by their id numbers). The relationship between *time* and *antisocial behavior* slightly varies between the children. The relationship between *reading recognition skills* and *antisocial behavior* is quite similar for different children in this subset and the slopes seem to be close to 0. 
 
-```{r, message=FALSE, echo=FALSE, fig.align='center', fig.cap = "Scatterplot for cognitive stimulation and antisocial behavior", fig.topcaption=TRUE}
+\newpage 
+
+```{r, message=FALSE, echo=FALSE}
 # antisocial behavior with cognitive stimulation
 dat_long %>% 
   group_by(id) %>% 
@@ -165,13 +166,14 @@ dat_long %>%
   theme_minimal()+
   xlab("cognitive stimulation") +
   ylab("aggregted Behavior Problems Index")+
+  ggtitle("Scatterplot for cognitive stimulation and antisocial behavior")+
   theme(plot.title = element_text(size = 10, hjust=0.5))
 ```
 
 The *Scatterplot for cognitive stimulation and antisocial behavior* reveals that both linear and quadratic trend lines for the relationship between *cognitive stimulation* and *antisocial behavior* are again similar to each other; adding the quadratic trend to the model would not add additional information in predicting the outcome. We conclude that the relationship seems to be approximately linear. 
 
 
-```{r, message=FALSE, echo=FALSE, fig.align='center',fig.cap = "Scatterplot for mother's age and antisocial behavior", fig.topcaption=TRUE}
+```{r, message=FALSE, echo=FALSE}
 # antisocial behavior with mother’s age.
 dat_long %>% 
   group_by(id) %>% 
@@ -186,6 +188,7 @@ dat_long %>%
               aes(color = "quadratic"),
               se = FALSE) +
   theme_minimal()+
+  ggtitle("Scatterplot for mother's age and antisocial behavior")+
   xlab("Mother's age") +
   ylab("aggregted Behaviors Problems Index")+
   theme(plot.title = element_text(size = 10, hjust=0.5))
@@ -194,7 +197,6 @@ dat_long %>%
 It can be seen from the *Scatterplot for mother's age and antisocial behavior* that the linear and quadratic trend lines for the relationship between *mother’s age* and *antisocial behavior* differ and the quadratic trend line seems to fit the data better. The difference is not that big and including the quadratic term would probably not result in much higher explained variance in the outcome. We conclude that the linearity assumptions does not hold here, but the deviation does not seem to be too serious. 
 
 ## Check for outliers, report.
-
 - Level 1:
 There are a few outliers at the middle two occasions for *time* and *antisocial behavior* and a few in the left middle part and upper middle part in the plot for *reading recognition* and *antisocial behavior*, but none of them seems too extreme. Given the size of the sample and the overall data, we do not expect them to be very influential. 
 
