@@ -695,6 +695,10 @@ $$Anti_{ti} = \beta_{00} + \beta_{01}homecog + \beta_{10}T_{ti} + \beta_{11}home
 
 ## Check the normality assumption for both the level-1 and level-2 errors, report.
 
+- First level residuals are approximately normally distributed with some outliers and minor deviations at the left bottom and upper right corner of the plot.
+- The residuals for the intercept and slope of *time* also include some outliers on each of the extremes and the middle part of the plot does not follow the line as well as the residuals on the first level. But we can conclude that the deviations are not too extreme and they are approximately normally distributed.
+
+
 ```{r, r, message=FALSE, echo=FALSE, fig.width=3.7}
 # level 1:
 qqnorm(residuals(m6b), main = "Q-Q plot for the first level residuals")
@@ -710,6 +714,3 @@ qqline(ranef(m6b)$id[,1])
 qqnorm(ranef(m6b)$id[,2], main = "Q-Q plot for the slope of time")
 qqline(ranef(m6b)$id[,2])
 ```
-
-- First level residuals are approximately normally distributed with some outliers and minor deviations at the left bottom and upper right corner of the plot.
-- The residuals for the intercept and slope of *time* also include some outliers on each of the extremes and the middle part of the plot does not follow the line as well as the residuals on the first level. But we can conclude that the deviations are not too extreme and they are approximately normally distributed.
