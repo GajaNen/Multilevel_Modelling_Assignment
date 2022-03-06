@@ -40,6 +40,8 @@ pander(describe(dat_long[,-1]), caption="Descriptive statistics")
 
 We see that the *time* variable ranges from 1 to 4, which means that the first occasion is coded as 1. This means that the intercept cannot be interpreted meaningfully (the time variable will never be equal to 0). Therefore, we will recode the time variable and set its range from 0 to 3, so that the intercept is the predicted outcome for the first occasion when all other predictors are equal to 0. Looking at the ranges of the other predictors, we see that 0 is not a plausible value for any of them. This again means that the intercept will not be meaningful and we will have to extrapolate to interpret it. We will center the three predictors (*momage*, *read*, *homecog*), so that the intercept can be interpreted as the predicted outcome at the first occasion for a person with average values on all the other predictors.
 
+$\setcounter{table}{1}$
+
 ```{r, echo=FALSE}
 # rescale the time variable
 dat_long$time <- dat_long$time - 1
@@ -48,7 +50,7 @@ dat_long$time <- dat_long$time - 1
 dat_long[,-c(1, 4, 5)] <- scale(dat_long[,-c(1, 4, 5)], scale=F)
 
 # check summary statistics again
-pander(describe(dat_long[,-1]), caption="Descriptive statistics for rescaled predictors")
+pander(describe(dat_long[,-1]), caption="Descriptive statistics for centered and scaled predictors")
 ```
 
 As we see from the table, 0 is now a plausible (and meaningful) value for every predictor.
@@ -232,6 +234,8 @@ summary(m1)
 # comparison of m0 and m1
 anova(m1, m0)
 ```
+
+$\setcounter{table}{2}$ 
 
 \begin{table}[!h]
 \centering
