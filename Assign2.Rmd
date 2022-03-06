@@ -685,13 +685,13 @@ $$Anti_{ti} = \pi_{0i} + \pi_{1i}T_{ti} + e_{ti}$$
 
 Equation of level 2:
 
-$$\pi_{0i} = \beta_{00} + \beta_{01}homecog + u_{0i}$$
+$$\pi_{0i} = \beta_{00} + \beta_{01}homecog_i + u_{0i}$$
 
-$$\pi_{1i} = \beta_{10} + \beta_{11}homecog + u_{1i}$$
+$$\pi_{1i} = \beta_{10} + \beta_{11}homecog_i + u_{1i}$$
 
 Mixed Model Equation :
 
-$$Anti_{ti} = \beta_{00} + \beta_{01}homecog + \beta_{10}T_{ti} + \beta_{11}homecog*time + u_{0i} + u_{1i}T_{ti} + e_{ti}$$
+$$Anti_{ti} = \beta_{00} + \beta_{01}homecog_i + \beta_{10}T_{ti} + \beta_{11}homecog_i*time_{ti} + u_{0i} + u_{1i}T_{ti} + e_{ti}$$
 
 ## Check the normality assumption for both the level-1 and level-2 errors, report.
 
