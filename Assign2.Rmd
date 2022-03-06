@@ -492,12 +492,12 @@ Firstly, we should inspect the random slope for *time* and modify the model base
 ## What are the null- and alternative hypotheses?
 
 - For *time*:
-$H_0: \sigma^2_{u_1}=0$
-$H_1: \sigma^2_{u_1}>0$
+$$H_0: \sigma^2_{u_1}=0$$
+$$H_1: \sigma^2_{u_1}>0$$
 
 - For *reading recognition*:
-$H_0: \sigma^2_{u_2}=0$
-$H_1: \sigma^2_{u_2}>0$
+$$H_0: \sigma^2_{u_2}=0$$
+$$H_1: \sigma^2_{u_2}>0$$
 
 ## Provide and interpret the relevant results.
 
@@ -613,7 +613,7 @@ anova(m6b, m5a)
 \centering
 \begin{threeparttable}
 \caption{Model with predictors for the slope of time}
-\begin{tabular}{l @{\hspace{0\tabcolsep}} cc}
+\begin{tabular}{l{0cm}cc}
 \toprule
 \textbf{Model}                & $M_{6a}$: with momage and homecog & $M_{6b}$: only homecog \\ 
 \midrule
@@ -683,18 +683,14 @@ Therefore, model 6b is our final model.
 
 ## provide the separate level 1 and 2 model equations, as well as the mixed model equation.
 
-Equation of level 1:
-
+- Equation of level 1:
 $$Anti_{ti} = \pi_{0i} + \pi_{1i}time_{ti} + e_{ti}$$
 
-Equation of level 2:
-
+- Equation of level 2:
 $$\pi_{0i} = \beta_{00} + \beta_{01}homecog_i + u_{0i}$$
-
 $$\pi_{1i} = \beta_{10} + \beta_{11}homecog_i + u_{1i}$$
 
 Mixed Model Equation :
-
 $$Anti_{ti} = \beta_{00} + \beta_{01}homecog_i + \beta_{10}time_{ti} + \beta_{11}homecog_i*time_{ti} + u_{0i} + u_{1i}time_{ti} + e_{ti}$$
 
 ## Check the normality assumption for both the level-1 and level-2 errors, report.
