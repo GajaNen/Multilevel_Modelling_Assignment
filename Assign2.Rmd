@@ -372,7 +372,7 @@ $R^2_{Level1} = \frac{\sigma^2_{e(model2)} - \sigma^2_{e(model3)}}{\sigma^2_{e(m
 
 The formula for the explained variance on level-2 is:
 
-$R^2_{Level2} = \frac{\sigma^2_{u0(model2)} - \sigma^2_{u0(model3)}}{\sigma^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+$R^2_{Level2} = \frac{\sigma^2_{u0(model2)} - \sigma^2_{u0(model3)}}{\sigma^2_{u0(model2)}} = \frac{1.592 - 1.576}{1.592} = 0.01$
 
 ```{r}
 (1.592 - 1.576) / 1.592
