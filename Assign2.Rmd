@@ -48,7 +48,7 @@ dat_long$time <- dat_long$time - 1
 dat_long[,-c(1, 4, 5)] <- scale(dat_long[,-c(1, 4, 5)], scale=F)
 
 # check summary statistics again
-pander(describe(dat_long[,-1]), caption="Descriptive statistics")
+pander(describe(dat_long[,-1]), caption="Descriptive statistics for rescaled predictors")
 ```
 
 As we see from the table, 0 is now a plausible (and meaningful) value for every predictor.
