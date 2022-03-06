@@ -139,7 +139,7 @@ The plot of the relation between *time* and *antisocial behavior* reveals that t
 
 As we can see from the *Figure 2*, the linear and quadratic lines for the relation between the *reading recognition skills* and *antisocial behavior* are now slightly different. The quadratic trend seems to fit somewhat better (and explain more variance in the outcome) than the linear one, albeit to a rather small degree. The slope of the linear trend line seems to be close to 0, indicating that there is no linear relation between these two variables. There appears to be neither linear nor quadratic relation between the two variables, but we will include *read* in the analysis to further evaluate this.
 
-*Figures * shows the relations between the first level predictors and the outcome for a subset of children. The relation between *time* and *antisocial behavior* slightly varies between the children. The relation between *reading recognition skills* and *antisocial behavior* is quite similar for different children in this subset and the slopes seem to be close to 0. 
+*Figures * show the relations between the first level predictors and the outcome for a subset of children. The relation between *time* and *antisocial behavior* slightly varies between the children. The relation between *reading recognition skills* and *antisocial behavior* is quite similar for different children in this subset and the slopes seem to be close to 0. 
 
 ```{r}
 # a scatterplot for each of the time invariant predictors and the aggregated outcome:
@@ -479,7 +479,6 @@ m6a <- lmer(anti ~ 1 + time + homecog + time*homecog + time*momage + (1 + time|i
 summary(m6a) # momage*time is not significant
 
 # compare the model with the two predictors of slope and the model without them
-
 anova(m6a, m5a)
 
 # keep only homecog*time
@@ -510,16 +509,27 @@ The intercept, $b_0=1.55, t(221)=16.30, p<.001$, coefficient for *time*, $b_{tim
 
 - with each measurement occasion, the predicted *anti* score increases by 0.18 when the *cognitive stimulation* score is average;
 
-- with each one point increase in *cognitive stimulation*, the coefficient for *time* decreases by 0.05. This means that the rate of change in *antisocial behavior* over time is smaller for children who received more *cognitive stimulation* than for children with lower score on this variable.
+- with each one point increase in *cognitive stimulation*, the coefficient for *time* decreases by 0.05. This means that the rate of change in *antisocial behavior* over time is lower (for positive slopes, it would get higher for negative slopes) for children who received more *cognitive stimulation* than for children with lower score on this variable.
 
 *Cognitive stimulation* is not significant, $b_{homecog}=-0.06, t(221)=-1.49, p > .05$.
 
-We obtained a better-fitting model compared to the model without the slope predictors, 5a, $χ^2(1) = 6.88$, $p<.05$. Therefore, model_6b is our final model.
+Correlation between the slopes of *time* and intercepts is 0.48, slightly lower than in the model without the predictors of the slope for *time*. Again, the interpretation remains the same in the sense that *antisocial behavior* increases more rapidly in children with higher *antisocial behavior* score at the first occasion than in the ones with the lower score at the beginning.
 
-**AIC values**
-**covariance**
+```{r}
+(0.09628-0.08397)/0.09628
+```
+
+*Cognitive stimulation* explains 13% of variance in slopes of *time* (that is, rates of change in the outcome over time), $R^2=0.13$. 
+
+Comparing this model with the model with both interactions (m6a), we see that the latter does not fit the data better $χ^2(2) = 0.3$, $p>.05$. This is further confirmed by AIC values, $AIC_{m6b}=3288.4$, than of the model with both interactions, $AIC_{m6a}=3292.1$. 
+
+Furthermore, we obtained a better-fitting model compared to the model without the slope predictors, m5a, $χ^2(1) = 6.88$, $p<.05$.
 
 **Overall conclusion**
+
+We conclude that adding the cross-level interaction between *cognitive stimulation* and *time* improves the model. *Cognitive stimulation* can explain a part of the variation in the trends in *antisocial behavior* over time across children. Adding *mother's age* as a predictor of slope for *time* does not improve the model and this variable does not moderate the relation between *time* and *antisocial behavior*. 
+
+Therefore, model 6b is our final model.
 
 # 9. Decide on a final model.
 
@@ -557,7 +567,8 @@ qqnorm(ranef(m6b)$id[,2], main = "Q-Q plot for the slope of time variable")
 qqline(ranef(m6b)$id[,2])
 ```
 
-According to the Q-Q plots, since the distribution of the residuals in level-1 and level-2 roughly fit to the diagonal line. We confirm that the normality of both level-1 and level-2 residuals hold.
+- First level residuals are approximately normally distributed with some outliers and minor deviations on left bottom and upper right corner of the plot.
+- The residuals for the intercept and slope of *time* also have some outliers on each side and the middle part of the plot does not follow the line as well as the residuals on the first level. But we can conclude that the deviations are not too extreme and they are approximately normally distributed.
 
 # I temporarily moved the equations here
 
