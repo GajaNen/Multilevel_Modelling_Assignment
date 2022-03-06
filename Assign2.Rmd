@@ -199,7 +199,7 @@ It can be seen from the *Scatterplot for mother's age and antisocial behavior* t
 There are a few outliers at the middle two occasions for *time* and *antisocial behavior* and a few in the left middle part and upper middle part in the plot for *reading recognition* and *antisocial behavior*, but none of them seems too extreme. Given the size of the sample and the overall data, we do not expect them to be very influential. 
 
 - Level 2:
-There are a few outliers in the middle upper part of the plot for *cognitive stimulation* and *antisocial behavior*. Moreover, there is are a few outliers in the left part (in the left extreme of the *read*'s scale) and in the upper middle part of the plot for *mother's age* and *antisocial behavior*. Again, we do not expect them to have much influence, given the size of the sample and the overall trends in the data. 
+There are a few outliers in the middle upper part of the plot for *cognitive stimulation* and *antisocial behavior*. Moreover, there are a few outliers in the left part (in the left extreme of the *read*'s scale) and in the upper middle part of the plot for *mother's age* and *antisocial behavior*. Again, we do not expect them to have much influence, given the size of the sample and the overall trends in the data. 
 
 # 2. Answer the question: should you perform a multilevel analysis?
 
@@ -335,9 +335,9 @@ Comparing the fixed *time* model with the random intercept-only model, we see th
 
 **Model 3 with fixed time and reading recognition**
 
-Both the intercept ($b_{0}=1.50, t(580) = 9.94, p <.001$) and the coefficient of *time* ($b_{time}=0.21, t(882) = 2.73, p < .01$) are again significant, but their values are slightly higher. The intercept now represents the Behavior Problems Index that would be expected at the first measurement occasion when the *reading recognition* score at that occasion is average. The coefficient for *time* can be interpreted as follows: with each measurement occasion, the predicted *antisocial behavior* score goes up by .21 when *reading recognition* is held constant. We see that *reading recognition skills* is not significant ($b_{read} = -0.03, t(831) = -0.54, p > .05$).
+Both the intercept ($b_{0}=1.50, t(580) = 9.94, p <.001$) and the coefficient of *time* ($b_{time}=0.21, t(882) = 2.73, p < .05$) are again significant, but their values are slightly higher. The intercept now represents the Behavior Problems Index that would be expected at the first measurement occasion when the *reading recognition* score at that occasion is average. The coefficient for *time* can be interpreted as follows: with each measurement occasion, the predicted *antisocial behavior* score goes up by .21 when *reading recognition* is held constant. We see that *reading recognition skills* is not significant ($b_{read} = -0.03, t(831) = -0.54, p > .05$).
 
-Comparing the fixed *time* model with the model with both *time* and *read*, we see that adding *read* does not improve the fit of the model, $\chi^2(1)=0.29, p > .05$. AIC values further confirm this, $AIC_{m2}=3325.5, AIC_{m3}=3327.3$. 
+Comparing the fixed *time* model with the model with both *time* and *read*, we see that adding *read* does not improve the fit of the model, $\chi^2(1)=0.29, p > .05$. AIC values further confirm this, $AIC_{m2}=3325.5, AIC_{m3}=3327.2$. 
 
 **Overall conclusion**
 
