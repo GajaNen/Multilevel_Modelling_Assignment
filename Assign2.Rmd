@@ -470,7 +470,7 @@ Since we have added only a level 2 predictor, which predicts the intercept (the 
 
 The formula for the explained variances of level-2 is:
 
-$R^2_{Level2} = \frac{\sigma^2_{u0(model2)} - \sigma^2_{u0(model4a)}}{\sigma^2_{u0(model2)}} = \frac{1.592 - 1.592}{1.592} = 0.01$
+$R^2_{Level2} = \frac{\sigma^2_{u0(model2)} - \sigma^2_{u0(model4b)}}{\sigma^2_{u0(model2)}} = \frac{1.592 - 1.488}{1.592} = 0.07$
 
 ```{r}
 (1.592 - 1.488) / 1.592
